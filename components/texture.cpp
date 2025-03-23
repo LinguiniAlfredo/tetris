@@ -1,7 +1,5 @@
-#pragma once
 #include "texture.h"
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 
 Texture::Texture(SDL_Renderer* r, string path, int w, int h) {
 	renderer = r;

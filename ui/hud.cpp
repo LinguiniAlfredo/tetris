@@ -1,36 +1,39 @@
 #include "hud.h"
-#include "../components/texture.h"
 
-HUD::HUD(SDL_Renderer* renderer) {
-	this->renderer = renderer;
-	this->font = TTF_OpenFont("resources/fonts/nintendo-nes-font.ttf", 28);
-	if (font == NULL) {
-		printf("error loading font: %s \n", TTF_GetError());
-		font = nullptr;
-	}
+HUD::HUD(SDL_Renderer *renderer) {
+	this->font = TTF_OpenFont("resources/fonts/vermin.ttf", 28);
 	this->fps_texture = new Texture(renderer, "0 FPS", font, color, 15,5);
 }
 
 HUD::~HUD() {
-	delete fps_texture;
-	fps_texture = nullptr;
+	if (fps_texture != nullptr) {
+		delete fps_texture;
+		fps_texture = nullptr;
+	}
 
-	TTF_CloseFont(font);
-	font = nullptr;
+	if (font != nullptr) {
+		TTF_CloseFont(font);
+		font = nullptr;
+	}
 }
 
-void HUD::updateAndDraw(float fps) {
+void HUD::update(float fps) {
 	updateFPS(fps);
 	//updateCoins()
 	//updateLife()
-	this->fps_texture->render(1, 1);
-	//this->coins->render
-	//this->life->render
+}
+
+void HUD::draw() const {
+	fps_texture->render(1,1);
+	//coins_texture->render();
+	//life_texture->render();
 }
 
 void HUD::updateFPS(float value) {
+	SDL_Renderer *tmp;
 	if (fps_texture != nullptr) {
+		tmp = fps_texture->renderer;
 		delete fps_texture;
 	}
-	fps_texture = new Texture(renderer, std::to_string((int)round(value)) + " FPS", font, color, 15, 5);
+	fps_texture = new Texture(tmp, std::to_string((int)round(value)) + " FPS", font, color, 15, 5);
 }

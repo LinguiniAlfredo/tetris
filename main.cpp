@@ -8,6 +8,7 @@
 
 #include "ui/hud.h"
 #include "utils/timer.h"
+#include "entities/player.h"
 
 const int SCREEN_WIDTH = 1920 / 2;
 const int SCREEN_HEIGHT = 1080 / 2;
@@ -29,13 +30,13 @@ bool init() {
 	} else {
 		printf("SDL initialized successfully\n");
 		window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (window == NULL) {
+		if (window == nullptr) {
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			success = false;
 		} else {
             printf("window created successfully\n");
 			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-			if (renderer == NULL) {
+			if (renderer == nullptr) {
 				printf("renderer could not be created : %s", SDL_GetError());
 
 			} else {
@@ -48,8 +49,8 @@ bool init() {
 					success = false;
 				} else {
                     printf("SDL_Image initialized successfully\n");
-					if (TTF_Init() < 0) {
-                        printf("SDL_TTF failed to initialize: %s\n", SDL_GetError());
+					if (TTF_Init() == -1) {
+                        printf("SDL_TTF failed to initialize: %s\n", TTF_GetError());
                     } else {
                         printf("SDL_TTF initialized successfully\n");
                     }
@@ -81,15 +82,20 @@ bool handleEvents() {
     return quit;
 }
 
-void render() {
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
+void render(const Player &player) {
+        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
+        SDL_RenderClear(renderer);
+
+        player.draw();
+        // hud.draw();
+
+        SDL_RenderPresent(renderer);
 }
 
 void gameLoop() {
     Timer fpsTimer;
-    HUD hud = HUD(renderer);
+    Player player = Player(renderer);
+    // HUD hud = HUD(renderer);
 
     bool quit = false;
     uint32_t countedFrames = 0;
@@ -99,11 +105,11 @@ void gameLoop() {
 
     while (!quit) {
         quit = handleEvents();
-        render();
+
+        render(player);
 
         fps = countedFrames / (fpsTimer.getTicks() / 1000.f);
-        // printf("%f\n", fps);
-        hud.updateAndDraw(fps);
+        // hud.update(fps);
         countedFrames++;
     }
 }
@@ -111,8 +117,8 @@ void gameLoop() {
 void close() {		
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
-	renderer = NULL;
-	window = NULL;
+	renderer = nullptr;
+	window = nullptr;
 
 	TTF_Quit();
 	IMG_Quit();
