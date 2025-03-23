@@ -15,13 +15,13 @@ public:
 	int width;
 	int height;
     string name = "";
-	SDL_Texture* texture;
-	SDL_Renderer* renderer;
+	SDL_Texture *texture = nullptr;
+	SDL_Renderer *renderer = nullptr;
 
 	void render(int x, int y);
 
 private:
-	SDL_Texture* loadFromFile(string path);
-	SDL_Texture*  loadFromRenderedText(string text, TTF_Font* font, SDL_Color color);
+	SDL_Texture *loadFromFile(string path);
+	SDL_Texture *loadFromRenderedText(string text, TTF_Font* font, SDL_Color color);
 	void free();
 };
