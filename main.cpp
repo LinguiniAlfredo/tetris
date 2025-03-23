@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -82,12 +83,12 @@ bool handleEvents() {
     return quit;
 }
 
-void render(const Player &player) {
+void render(const Player &player, const HUD &hud) {
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
         SDL_RenderClear(renderer);
 
         player.draw();
-        // hud.draw();
+        hud.draw();
 
         SDL_RenderPresent(renderer);
 }
@@ -95,7 +96,7 @@ void render(const Player &player) {
 void gameLoop() {
     Timer fpsTimer;
     Player player = Player(renderer);
-    // HUD hud = HUD(renderer);
+    HUD hud = HUD(renderer);
 
     bool quit = false;
     uint32_t countedFrames = 0;
@@ -106,10 +107,10 @@ void gameLoop() {
     while (!quit) {
         quit = handleEvents();
 
-        render(player);
+        render(player, hud);
 
         fps = countedFrames / (fpsTimer.getTicks() / 1000.f);
-        // hud.update(fps);
+        hud.update(fps);
         countedFrames++;
     }
 }

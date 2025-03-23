@@ -1,7 +1,7 @@
 OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/player.o
 
 CC = g++
-OPTIONS = -Wall -g
+OPTIONS = -std=c++11 -Wall -g
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf 
 EXE = main
 

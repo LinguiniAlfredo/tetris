@@ -11,8 +11,8 @@ public:
 	HUD(SDL_Renderer *renderer);
 	~HUD();
 
-	TTF_Font* font;
-	Texture* fps_texture;
+	TTF_Font *font;
+	Texture *fps_texture;
 	SDL_Color color = { 255,255,255,255 };
 
 	void update(float fps);
