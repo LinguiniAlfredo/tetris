@@ -8,7 +8,7 @@ public:
     Player(SDL_Renderer *renderer);
     ~Player();
 
-    Texture *texture;
+    Texture *texture = nullptr;
 
     void update();
     void draw() const;

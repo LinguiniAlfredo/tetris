@@ -1,7 +1,7 @@
 #include "hud.h"
 
 HUD::HUD(SDL_Renderer *renderer) {
-	this->font = TTF_OpenFont("resources/fonts/kart.ttf", 28);
+	this->font = TTF_OpenFont("resources/fonts/nes.ttf", 28);
 	this->fps_texture = new Texture(renderer, "0 FPS", font, color, 15,5);
 }
 

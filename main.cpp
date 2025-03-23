@@ -83,19 +83,17 @@ bool handleEvents() {
     return quit;
 }
 
-void render(const Player &player, const HUD &hud) {
-        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
-        SDL_RenderClear(renderer);
+void render(const HUD &hud) {
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
+    SDL_RenderClear(renderer);
 
-        player.draw();
-        hud.draw();
+    hud.draw();
 
-        SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
 }
 
 void gameLoop() {
     Timer fpsTimer;
-    Player player = Player(renderer);
     HUD hud = HUD(renderer);
 
     bool quit = false;
@@ -107,7 +105,7 @@ void gameLoop() {
     while (!quit) {
         quit = handleEvents();
 
-        render(player, hud);
+        render(hud);
 
         fps = countedFrames / (fpsTimer.getTicks() / 1000.f);
         hud.update(fps);

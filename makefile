@@ -24,4 +24,4 @@ clean : $(OBJS)
 	rm -r ./build/
 	rm ./main
 
-$(shell mkdir ./build)
+$(shell mkdir -p ./build)
