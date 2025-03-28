@@ -1,4 +1,4 @@
-OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/player.o
+OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/tetromino.o ./build/board.o
 
 CC = g++
 OPTIONS = -std=c++11 -Wall -g
@@ -16,9 +16,12 @@ build/timer.o : utils/timer.cpp
 
 build/hud.o : ui/hud.cpp
 	$(CC) ui/hud.cpp -c -w $(LINKER_FLAGS) -o ./build/hud.o
+	
+build/tetromino.o : entities/tetromino.cpp
+	$(CC) entities/tetromino.cpp -c -w $(LINKER_FLAGS) -o ./build/tetromino.o
 
-build/player.o : entities/player.cpp
-	$(CC) entities/player.cpp -c -w $(LINKER_FLAGS) -o ./build/player.o
+build/board.o : board.cpp
+	$(CC) board.cpp -c -w $(LINKER_FLAGS) -o ./build/board.o
 
 clean : $(OBJS)
 	rm -r ./build/

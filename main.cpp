@@ -2,23 +2,21 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
+#include "board.h"
 #include "ui/hud.h"
 #include "utils/timer.h"
-#include "entities/player.h"
+#include "entities/tetromino.h"
 
-const int SCREEN_WIDTH = 1920 / 2;
-const int SCREEN_HEIGHT = 1080 / 2;
-const int INTERNAL_SCREEN_WIDTH = 320;
-const int INTERNAL_SCREEN_HEIGHT = 180;
-const int CENTER_X = INTERNAL_SCREEN_WIDTH / 2;
-const int CENTER_Y = INTERNAL_SCREEN_HEIGHT / 2;
-const int NUM_TILES_WIDE = INTERNAL_SCREEN_WIDTH / 8;
-const int NUM_TILES_HIGH = INTERNAL_SCREEN_HEIGHT / 8;
+using namespace std;
+
+const int BOARD_WIDTH_PX = 10 * 8;
+const int BOARD_HEIGHT_PX = 20 * 8;
 
 SDL_Renderer *renderer = nullptr;
 SDL_Window *window = nullptr;
@@ -30,7 +28,7 @@ bool init() {
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 	} else {
 		printf("SDL initialized successfully\n");
-		window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, BOARD_WIDTH_PX*2.3, BOARD_HEIGHT_PX*2.3, SDL_WINDOW_SHOWN);
 		if (window == nullptr) {
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			success = false;
@@ -42,7 +40,7 @@ bool init() {
 
 			} else {
                 printf("renderer created successfully\n");
-				SDL_RenderSetLogicalSize(renderer, INTERNAL_SCREEN_WIDTH, INTERNAL_SCREEN_HEIGHT);
+				SDL_RenderSetLogicalSize(renderer, BOARD_WIDTH_PX, BOARD_HEIGHT_PX);
 
 				int imgFlags = IMG_INIT_PNG;
 				if (!(IMG_Init(imgFlags) & imgFlags)) {
@@ -83,18 +81,23 @@ bool handleEvents() {
     return quit;
 }
 
-void render(const HUD &hud) {
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
+void render(Board *board) {
+    SDL_SetRenderDrawColor(renderer, 0xF5, 0xF5, 0xF5, 0xFF);
     SDL_RenderClear(renderer);
 
-    hud.draw();
+    // board->hud->draw();
+    board->drawGrid(renderer);
+    for (Tetromino *tetra : board->tetrominos) {
+        tetra->draw();
+    }
 
     SDL_RenderPresent(renderer);
 }
 
 void gameLoop() {
     Timer fpsTimer;
-    HUD hud = HUD(renderer);
+    Board *board = new Board(renderer);
+    board->addTetromino(new Tetromino(renderer, T, 0, 0));
 
     bool quit = false;
     uint32_t countedFrames = 0;
@@ -105,12 +108,13 @@ void gameLoop() {
     while (!quit) {
         quit = handleEvents();
 
-        render(hud);
+        render(board);
 
         fps = countedFrames / (fpsTimer.getTicks() / 1000.f);
-        hud.update(fps);
+        board->hud->update(fps);
         countedFrames++;
     }
+    delete board;
 }
 
 void close() {		

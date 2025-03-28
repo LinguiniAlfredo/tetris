@@ -24,7 +24,9 @@ void HUD::update(float fps) {
 }
 
 void HUD::draw() const {
-	fps_texture->render(1,1);
+	if (fps_texture != nullptr) {
+		fps_texture->render(1,1);
+	}
 	//coins_texture->render();
 	//life_texture->render();
 }

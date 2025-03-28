@@ -12,8 +12,8 @@ public:
 	Texture(SDL_Renderer* r, string text, TTF_Font* font, SDL_Color color, int w, int h);
 	~Texture();
 
-	int width;
-	int height;
+	int width = 0;
+	int height = 0;
     string name = "";
 	SDL_Texture *texture = nullptr;
 	SDL_Renderer *renderer = nullptr;

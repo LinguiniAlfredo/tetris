@@ -37,7 +37,7 @@ SDL_Texture* Texture::loadFromFile(string path) {
 	}
 	else {
 		// Uncomment for transparency keyframing
-		//SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0xFF, 0xFF));
+		// SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 0, 0xFF, 0xFF));
 
 		newTexture = SDL_CreateTextureFromSurface(renderer, surface);
 		if (newTexture == nullptr) {
