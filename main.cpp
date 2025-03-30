@@ -127,6 +127,8 @@ void gameLoop() {
     totalTimer.start();
     deltaTimer.start();
 
+    // testing neogit
+
     while (!quit) {
         deltaTimer.start();
         capTimer.start();
