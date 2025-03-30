@@ -7,7 +7,6 @@
 
 class Board {
 public:
-    Board(SDL_Renderer *renderer);
     Board(SDL_Renderer *renderer, double gravity);
     ~Board();
 
@@ -17,9 +16,11 @@ public:
 
     Tetromino *activeTetromino = nullptr;
 
+    bool softDrop = false;
+    double initialGravity;
     double gravity = 0.016666667;    // 1 cell per 60 frames
-    //double gravity = 0.05;           // 1 cell per 20 frames 
-    //double gravity = 1.0;            // 1 cell per frame
+    double softDropGravity = 0.5;
+    double hardDropGravity = 1.0;
 
     int width = 10 * 8;
     int height = 20 * 8;

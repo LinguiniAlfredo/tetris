@@ -3,14 +3,10 @@
 
 using namespace std;
 
-Board::Board(SDL_Renderer *renderer) {
-    this->renderer = renderer;
-    this->hud = new HUD(renderer);
-}
-
 Board::Board(SDL_Renderer *renderer, double gravity) {
     this->renderer = renderer;
     this->hud = new HUD(renderer);
+    this->initialGravity = gravity;
     this->gravity = gravity;
     addRandomTetromino();
 }

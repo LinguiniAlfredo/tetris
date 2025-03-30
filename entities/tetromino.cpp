@@ -31,7 +31,8 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 }
                 break;
             case SDLK_s:
-                // increase gravity
+                // soft drop (increase gravity)
+                board->softDrop = true;
                 break;
             case SDLK_d:
                 position.x += 8;
@@ -39,7 +40,17 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                     position.x -= 8;
                 }
                 break;
+            case SDLK_SPACE:
+                // hard drop (snap to bottom)
+                break;
             default:
+                break;
+        }
+    }
+    if (e.type == SDL_KEYUP) {
+        switch (e.key.keysym.sym) {
+            case SDLK_s:
+                board->softDrop = false;
                 break;
         }
     }
@@ -63,6 +74,13 @@ void Tetromino::drop() {
     trueYPos += board->gravity;
     if (floor(trueYPos) == (float)trueYPos) {
         position.y += 8;
+
+        if (board->softDrop) {
+            board->gravity = board->softDropGravity;
+        } else {
+            board->gravity = board->initialGravity;
+        }
+
         if (!inBounds()) {
             position.y -= 8;
         }
