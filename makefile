@@ -1,4 +1,4 @@
-OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/tetromino.o ./build/board.o
+OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/tetromino.o ./build/board.o ./build/vec2.o
 
 CC = g++
 OPTIONS = -std=c++11 -Wall -g
@@ -14,6 +14,9 @@ build/texture.o : components/texture.cpp
 build/timer.o : utils/timer.cpp
 	$(CC) utils/timer.cpp -c -w $(LINKER_FLAGS) -o ./build/timer.o
 
+build/vec2.o : utils/vec2.cpp
+	$(CC) utils/vec2.cpp -c -w $(LINKER_FLAGS) -o ./build/vec2.o
+
 build/hud.o : ui/hud.cpp
 	$(CC) ui/hud.cpp -c -w $(LINKER_FLAGS) -o ./build/hud.o
 	
@@ -26,5 +29,13 @@ build/board.o : board.cpp
 clean : $(OBJS)
 	rm -r ./build/
 	rm ./main
+
+debug : $(OBJS)
+	valgrind --leak-check=full \
+		--show-leak-kinds=all \
+		--track-origins=yes \
+		--verbose \
+		--log-file=debug.txt \
+		./main
 
 $(shell mkdir -p ./build)

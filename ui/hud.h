@@ -8,12 +8,13 @@
 class HUD
 {
 public:
+    HUD();
 	HUD(SDL_Renderer *renderer);
 	~HUD();
 
 	TTF_Font *font = nullptr;
 	Texture *fps_texture = nullptr;
-	SDL_Color color = { 255,255,255,255 };
+	SDL_Color color = { 0,0,0,255 };
 
 	void update(float fps);
 	void draw() const;

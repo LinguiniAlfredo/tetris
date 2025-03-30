@@ -15,8 +15,13 @@
 
 using namespace std;
 
+const float FPS = 60.f;
+const float TICKS_PER_FRAME = 1000.f / FPS;
+
 const int BOARD_WIDTH_PX = 10 * 8;
 const int BOARD_HEIGHT_PX = 20 * 8;
+const int SCREEN_WIDTH = BOARD_WIDTH_PX * 4;
+const int SCREEN_HEIGHT = BOARD_HEIGHT_PX * 4;
 
 SDL_Renderer *renderer = nullptr;
 SDL_Window *window = nullptr;
@@ -28,13 +33,13 @@ bool init() {
 		printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 	} else {
 		printf("SDL initialized successfully\n");
-		window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, BOARD_WIDTH_PX*2.3, BOARD_HEIGHT_PX*2.3, SDL_WINDOW_SHOWN);
+		window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (window == nullptr) {
 			printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			success = false;
 		} else {
             printf("window created successfully\n");
-			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+			renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 			if (renderer == nullptr) {
 				printf("renderer could not be created : %s", SDL_GetError());
 
@@ -60,7 +65,7 @@ bool init() {
 	return success;
 }
 
-bool handleEvents() {
+bool handleEvents(Board *board) {
     SDL_Event e;
     bool quit = false;
     while (SDL_PollEvent(&e) != 0) {
@@ -73,47 +78,75 @@ bool handleEvents() {
                 case SDLK_ESCAPE:
                     quit = true;
                     break;
+                case SDLK_r:
+                    reset();
+                    break;
                 default:
                     break;
             }
         }
+        board->handleEvent(e);
     }
     return quit;
 }
+
+void reset() {
+
+}
+
+void update(Board *board) {
+    board->update();
+}
+
 
 void render(Board *board) {
     SDL_SetRenderDrawColor(renderer, 0xF5, 0xF5, 0xF5, 0xFF);
     SDL_RenderClear(renderer);
 
-    // board->hud->draw();
     board->drawGrid(renderer);
-    for (Tetromino *tetra : board->tetrominos) {
-        tetra->draw();
-    }
+    board->drawTetrominos(renderer);
 
+    board->hud->draw();
     SDL_RenderPresent(renderer);
 }
 
 void gameLoop() {
-    Timer fpsTimer;
+    Timer totalTimer;
+    Timer deltaTimer;
+    Timer capTimer;
+
     Board *board = new Board(renderer);
-    board->addTetromino(new Tetromino(renderer, T, 0, 0));
+    Tetromino *tetromino = new Tetromino(renderer, T, { 3, 3 });
+    board->addTetromino(tetromino);
 
     bool quit = false;
     uint32_t countedFrames = 0;
     float fps = 0.f;
+    //float deltaTime = 0.f;
     
-    fpsTimer.start();
+    totalTimer.start();
+    deltaTimer.start();
 
     while (!quit) {
-        quit = handleEvents();
+        deltaTimer.start();
+        capTimer.start();
 
+        quit = handleEvents(board);
+
+        update(board);
         render(board);
 
-        fps = countedFrames / (fpsTimer.getTicks() / 1000.f);
+        fps = countedFrames / (totalTimer.getTicks() / 1000.f);
         board->hud->update(fps);
+        //deltaTime = deltaTimer.getTicks() / 1000.f;
+
         countedFrames++;
+        int ticks = capTimer.getTicks();
+        if (ticks < TICKS_PER_FRAME) {
+            SDL_Delay(TICKS_PER_FRAME - ticks);
+        }
     }
+    
     delete board;
 }
 

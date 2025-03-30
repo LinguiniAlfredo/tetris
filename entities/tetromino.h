@@ -1,5 +1,8 @@
 #pragma once
+#include "../utils/vec2.h"
 #include "../components/texture.h"
+
+class Board;
 
 using namespace std;
 
@@ -16,22 +19,24 @@ typedef enum {
 class Tetromino 
 {
 public:
-    Tetromino(SDL_Renderer *renderer, TetrominoType type, int x, int y);
+    Tetromino(SDL_Renderer *renderer, TetrominoType type, Vec2 position);
     ~Tetromino();
 
     TetrominoType type;
     Texture *texture = nullptr;
-    int x = 0;
-    int y = 0;
-    // Vec2 position;
+    Board *board = nullptr;
+    Vec2 position;
+    Vec2 truePosition;
     // Vec2 center;
 
+    void handleEvent(const SDL_Event& e);
     void update();
     void draw() const;
-
     void rotate();
     void drop();
+    bool inBounds();
 
 private:
     Texture* getTetrominoTexture(TetrominoType type, SDL_Renderer *renderer);
+
 };

@@ -11,17 +11,34 @@ Board::~Board(){
     }
 }
 
-void Board::drawGrid(SDL_Renderer *renderer) {
-    SDL_SetRenderDrawColor(renderer, 240, 2, 240, 240);
+void Board::handleEvent(const SDL_Event& e) {
+    activeTetromino->handleEvent(e);
+}
 
-    for (int x = 0; x < widthPx; x = x+8) {
-        SDL_RenderDrawLine(renderer, x, 0, x, heightPx);
-        for (int y = 0; y < heightPx; y = y+8) {
-            SDL_RenderDrawLine(renderer, 0, y, widthPx, y);
+void Board::update() {
+    activeTetromino->update();
+}
+
+void Board::drawTetrominos(SDL_Renderer *renderer) {
+    for (Tetromino *tetra : tetrominos) {
+        tetra->draw();
+    }
+}
+
+void Board::drawGrid(SDL_Renderer *renderer) {
+    SDL_SetRenderDrawColor(renderer, 240, 240, 240, 240);
+
+    for (int x = 0; x < width; x = x+8) {
+        SDL_RenderDrawLine(renderer, x, 0, x, height);
+        for (int y = 0; y < height; y = y+8) {
+            SDL_RenderDrawLine(renderer, 0, y, width, y);
         }
     }
 }
 
-void Board::addTetromino(Tetromino* tetromino) {
+void Board::addTetromino(Tetromino *tetromino) {
     tetrominos.push_back(tetromino);
+    this->activeTetromino = tetromino;
+    tetromino->board = this;
 }
+
