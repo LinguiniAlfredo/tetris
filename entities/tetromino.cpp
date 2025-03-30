@@ -99,8 +99,10 @@ Texture* Tetromino::acquireTetrominoTexture(TetrominoType type, SDL_Renderer *re
     string filepath;
     switch(type) {
         case I:
+            filepath = "resources/textures/I.png";
             break;
         case O:
+            filepath = "resources/textures/O.png";
             break;
         case T:
             filepath = "resources/textures/T.png";

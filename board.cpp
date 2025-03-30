@@ -57,7 +57,7 @@ void Board::prepTetrominos() {
 
 void Board::addRandomTetromino(bool bagPiece) {
     // TODO - add regulation "bag" system
-    int randomType = rand() % 5 + 2;
+    int randomType = rand() % 7 + 0;
     addTetromino((TetrominoType)randomType, bagPiece);
 }
 
