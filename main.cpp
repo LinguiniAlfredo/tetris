@@ -127,7 +127,7 @@ void gameLoop() {
     totalTimer.start();
     deltaTimer.start();
 
-    // testing neogit
+    // testing fugitive git
 
     while (!quit) {
         deltaTimer.start();
