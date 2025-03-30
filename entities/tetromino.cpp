@@ -31,6 +31,7 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 }
                 break;
             case SDLK_s:
+                // soft drop (increases gravity)
                 board->softDrop = true;
                 break;
             case SDLK_d:
@@ -40,7 +41,7 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 }
                 break;
             case SDLK_SPACE:
-                // hard drop (snap to bottom)
+                // hard drop (snaps to bottom)
                 position.y = board->height - texture->height;
                 break;
             default:

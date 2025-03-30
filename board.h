@@ -15,6 +15,7 @@ public:
     vector<Tetromino*> tetrominos;
 
     Tetromino *activeTetromino = nullptr;
+    Tetromino *nextTetromino = nullptr;
 
     bool softDrop = false;
     double initialGravity;
@@ -28,6 +29,9 @@ public:
     int lockFrames = 30;
     int lockFrameCount = 0;
 
+    Vec2 spawnPosition = { 3, 3 };
+    Vec2 bagPosition = { 11, 1 };
+ 
     void handleEvent(const SDL_Event& e);
     void update();
 
@@ -35,6 +39,8 @@ public:
     void drawTetrominos();
     
 private:
-    void addRandomTetromino();
-    void addTetromino(TetrominoType type, Vec2 position);
+    void prepTetrominos();
+    void addRandomTetromino(bool bagPiece);
+    void cycleTetrominos();
+    void addTetromino(TetrominoType type, bool bagPiece);
 };

@@ -8,7 +8,7 @@ Board::Board(SDL_Renderer *renderer, double gravity) {
     this->hud = new HUD(renderer);
     this->initialGravity = gravity;
     this->gravity = gravity;
-    addRandomTetromino();
+    prepTetrominos();
 }
 
 Board::~Board(){
@@ -16,11 +16,6 @@ Board::~Board(){
     for (Tetromino* tetromino : tetrominos) {
         delete tetromino;
     }
-}
-
-void Board::addRandomTetromino() {
-    int randomType = rand() % 5 + 2;
-    addTetromino((TetrominoType)randomType, {3, 3});
 }
 
 void Board::handleEvent(const SDL_Event& e) {
@@ -31,8 +26,7 @@ void Board::update() {
     activeTetromino->update();
     if (activeTetromino->position.y == height - activeTetromino->texture->height) {
         if (lockFrameCount == lockFrames) {
-            activeTetromino = nullptr;
-            addRandomTetromino();
+            cycleTetrominos();
             lockFrameCount = 0;
         }
         lockFrameCount++;
@@ -56,10 +50,33 @@ void Board::drawGrid() {
     }
 }
 
-void Board::addTetromino(TetrominoType type, Vec2 position) {
+void Board::prepTetrominos() {
+    addRandomTetromino(false);
+    addRandomTetromino(true);
+}
+
+void Board::addRandomTetromino(bool bagPiece) {
+    // TODO - add regulation "bag" system
+    int randomType = rand() % 5 + 2;
+    addTetromino((TetrominoType)randomType, bagPiece);
+}
+
+void Board::cycleTetrominos() {
+    nextTetromino->position = spawnPosition;
+    activeTetromino = nextTetromino;
+    addRandomTetromino(true);
+}
+
+void Board::addTetromino(TetrominoType type, bool bagPiece) {
+    Vec2 position = bagPiece ? bagPosition : spawnPosition;
     Tetromino *tetromino = new Tetromino(renderer, this, type, position);
-    this->activeTetromino = tetromino;
     
+    if (bagPiece) {
+        this->nextTetromino = tetromino;
+    } else {
+        this->activeTetromino = tetromino;
+    }
+
     tetrominos.push_back(tetromino);
 }
 
