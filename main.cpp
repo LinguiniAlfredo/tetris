@@ -15,8 +15,7 @@
 
 using namespace std;
 
-const float FPS = 60.f;
-const float TICKS_PER_FRAME = 1000.f / FPS;
+const float TICKS_PER_FRAME = 1000.f / 60;
 
 const int BOARD_WIDTH_PX = 10 * 8;
 const int BOARD_HEIGHT_PX = 20 * 8;
