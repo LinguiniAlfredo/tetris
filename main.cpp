@@ -127,8 +127,6 @@ void gameLoop() {
     totalTimer.start();
     deltaTimer.start();
 
-    // testing fugitive git
-
     while (!quit) {
         deltaTimer.start();
         capTimer.start();
