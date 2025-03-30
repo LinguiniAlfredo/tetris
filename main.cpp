@@ -104,10 +104,10 @@ bool handleEvents() {
                     changeLevel(1);
                     break;
                 case SDLK_2:
-                    changeLevel(2);
+                    //changeLevel(2);
                     break;
                 case SDLK_3:
-                    changeLevel(3);
+                    //changeLevel(3);
                     break;
                 default:
                     break;
