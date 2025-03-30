@@ -73,17 +73,14 @@ void changeLevel(int level) {
         case 1:
             delete currentBoard;
             currentBoard = new Board(renderer, 0.016666667);
-            currentBoard->addTetromino(T, {3,3});  // change to board->start
             break;
         case 2:
             delete currentBoard;
             currentBoard = new Board(renderer, 0.05);
-            currentBoard->addTetromino(T, {3,3});  // change to board->start
             break;
         case 3:
             delete currentBoard;
             currentBoard = new Board(renderer, 1);
-            currentBoard->addTetromino(T, {3,3});  // change to board->start
             break;
         default:
             break;
@@ -144,7 +141,6 @@ void gameLoop() {
     Timer capTimer;
 
     changeLevel(1);
-    currentBoard->addTetromino(T, {3,3});  // change to board->start
 
     bool quit = false;
     uint32_t countedFrames = 0;

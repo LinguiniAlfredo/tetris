@@ -1,6 +1,8 @@
 #include "board.h"
 #include "utils/vec2.h"
 
+using namespace std;
+
 Board::Board(SDL_Renderer *renderer) {
     this->renderer = renderer;
     this->hud = new HUD(renderer);
@@ -10,6 +12,7 @@ Board::Board(SDL_Renderer *renderer, double gravity) {
     this->renderer = renderer;
     this->hud = new HUD(renderer);
     this->gravity = gravity;
+    addRandomTetromino();
 }
 
 Board::~Board(){
@@ -17,6 +20,12 @@ Board::~Board(){
     for (Tetromino* tetromino : tetrominos) {
         delete tetromino;
     }
+}
+
+void Board::addRandomTetromino() {
+    int randomType = rand() % 5 + 2;
+    addTetromino((TetrominoType)randomType, {3, 3});
+
 }
 
 void Board::handleEvent(const SDL_Event& e) {
