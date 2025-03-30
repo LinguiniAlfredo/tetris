@@ -7,4 +7,6 @@ public:
 
     int x;
     int y;
+
+    void operator+=(const Vec2& rhs);
 };

@@ -26,7 +26,7 @@ public:
     Texture *texture = nullptr;
     Board *board = nullptr;
     Vec2 position;
-    Vec2 truePosition;
+    Vec2 velocity;
     // Vec2 center;
 
     void handleEvent(const SDL_Event& e);

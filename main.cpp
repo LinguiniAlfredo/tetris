@@ -64,6 +64,10 @@ bool init() {
 	return success;
 }
 
+void reset() {
+
+}
+
 bool handleEvents(Board *board) {
     SDL_Event e;
     bool quit = false;
@@ -89,9 +93,6 @@ bool handleEvents(Board *board) {
     return quit;
 }
 
-void reset() {
-
-}
 
 void update(Board *board) {
     board->update();
@@ -105,7 +106,7 @@ void render(Board *board) {
     board->drawGrid(renderer);
     board->drawTetrominos(renderer);
 
-    board->hud->draw();
+    //board->hud->draw();
     SDL_RenderPresent(renderer);
 }
 

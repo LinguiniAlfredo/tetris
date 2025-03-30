@@ -20,27 +20,29 @@ void Tetromino::handleEvent(const SDL_Event& e) {
     if (e.type == SDL_KEYDOWN) {
         switch (e.key.keysym.sym) {
             case SDLK_a:
-                if (inBounds()) {
-                    position.x -= 8;
+                position.x -= 8;
+                if (!inBounds()) {
+                    position.x += 8;
                 }
                 break;
             case SDLK_s:
                 break;
             case SDLK_d:
-                if (inBounds()) {
-                    position.x += 8;
+                position.x += 8;
+                if (!inBounds()) {
+                    position.x -= 8;
                 }
                 break;
             default:
                 break;
         }
     }
-
 }
 
 void Tetromino::update() {
-    if (inBounds()) {
-        position.y += 1;
+    position.y += 1;
+    if (!inBounds()) {
+        position.y -= 1;
     }
 }
 
