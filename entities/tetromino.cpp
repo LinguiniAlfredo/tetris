@@ -1,12 +1,17 @@
 #include "tetromino.h"
 #include "../board.h"
+#include <cmath>
 
 using namespace std;
 
-Tetromino::Tetromino(SDL_Renderer *renderer, TetrominoType type, Vec2 position) {
+Tetromino::Tetromino(SDL_Renderer *renderer, Board *board, 
+        TetrominoType type, Vec2 position) {
+
+    this->board = board;
     this->type = type;
-    this->texture = getTetrominoTexture(type, renderer);
+    this->texture = acquireTetrominoTexture(type, renderer);
     this->position = position;
+    this->trueYPos = (float) position.y;
 }
 
 Tetromino::~Tetromino() {
@@ -26,6 +31,7 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 }
                 break;
             case SDLK_s:
+                // increase gravity
                 break;
             case SDLK_d:
                 position.x += 8;
@@ -40,10 +46,7 @@ void Tetromino::handleEvent(const SDL_Event& e) {
 }
 
 void Tetromino::update() {
-    position.y += 1;
-    if (!inBounds()) {
-        position.y -= 1;
-    }
+    drop();
 }
 
 void Tetromino::draw() const {
@@ -57,7 +60,13 @@ void Tetromino::rotate() {
 }
 
 void Tetromino::drop() {
-
+    trueYPos += board->gravity; // use gravity instead
+    if (floor(trueYPos) == (float)trueYPos) {
+        position.y += 8;
+        if (!inBounds()) {
+            position.y -= 8;
+        }
+    }
 }
 
 bool Tetromino::inBounds() {
@@ -67,7 +76,7 @@ bool Tetromino::inBounds() {
            position.y <= board->height - texture->height;
 }
 
-Texture* Tetromino::getTetrominoTexture(TetrominoType type, SDL_Renderer *renderer) {
+Texture* Tetromino::acquireTetrominoTexture(TetrominoType type, SDL_Renderer *renderer) {
     string filepath;
     switch(type) {
         case I:

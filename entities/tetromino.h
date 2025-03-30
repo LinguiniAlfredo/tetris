@@ -19,15 +19,15 @@ typedef enum {
 class Tetromino 
 {
 public:
-    Tetromino(SDL_Renderer *renderer, TetrominoType type, Vec2 position);
+    Tetromino(SDL_Renderer *renderer, Board *board, TetrominoType type, Vec2 position);
     ~Tetromino();
 
-    TetrominoType type;
-    Texture *texture = nullptr;
     Board *board = nullptr;
+    Texture *texture = nullptr;
+    TetrominoType type;
+
     Vec2 position;
-    Vec2 velocity;
-    // Vec2 center;
+    double trueYPos;
 
     void handleEvent(const SDL_Event& e);
     void update();
@@ -37,6 +37,5 @@ public:
     bool inBounds();
 
 private:
-    Texture* getTetrominoTexture(TetrominoType type, SDL_Renderer *renderer);
-
+    Texture* acquireTetrominoTexture(TetrominoType type, SDL_Renderer *renderer);
 };

@@ -1,7 +1,7 @@
 OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/tetromino.o ./build/board.o ./build/vec2.o
 
 CC = g++
-OPTIONS = -std=c++11 -Wall -g
+OPTIONS = -Wall -g
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf 
 EXE = main
 
@@ -26,11 +26,11 @@ build/tetromino.o : entities/tetromino.cpp
 build/board.o : board.cpp
 	$(CC) board.cpp -c -w $(LINKER_FLAGS) -o ./build/board.o
 
-clean : $(OBJS)
+clean :
 	rm -r ./build/
 	rm ./main
 
-debug : $(OBJS)
+debug :
 	valgrind --leak-check=full \
 		--show-leak-kinds=all \
 		--track-origins=yes \

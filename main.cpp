@@ -103,8 +103,8 @@ void render(Board *board) {
     SDL_SetRenderDrawColor(renderer, 0xF5, 0xF5, 0xF5, 0xFF);
     SDL_RenderClear(renderer);
 
-    board->drawGrid(renderer);
-    board->drawTetrominos(renderer);
+    board->drawGrid();
+    board->drawTetrominos();
 
     //board->hud->draw();
     SDL_RenderPresent(renderer);
@@ -116,8 +116,7 @@ void gameLoop() {
     Timer capTimer;
 
     Board *board = new Board(renderer);
-    Tetromino *tetromino = new Tetromino(renderer, T, { 3, 3 });
-    board->addTetromino(tetromino);
+    board->addTetromino(T, {3,3});
 
     bool quit = false;
     uint32_t countedFrames = 0;

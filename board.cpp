@@ -1,7 +1,9 @@
 #include "board.h"
+#include "utils/vec2.h"
 
 Board::Board(SDL_Renderer *renderer) {
-    hud = new HUD(renderer);
+    this->renderer = renderer;
+    this->hud = new HUD(renderer);
 }
 
 Board::~Board(){
@@ -19,13 +21,13 @@ void Board::update() {
     activeTetromino->update();
 }
 
-void Board::drawTetrominos(SDL_Renderer *renderer) {
+void Board::drawTetrominos() {
     for (Tetromino *tetra : tetrominos) {
         tetra->draw();
     }
 }
 
-void Board::drawGrid(SDL_Renderer *renderer) {
+void Board::drawGrid() {
     SDL_SetRenderDrawColor(renderer, 240, 240, 240, 240);
 
     for (int x = 0; x < width; x = x+8) {
@@ -36,9 +38,10 @@ void Board::drawGrid(SDL_Renderer *renderer) {
     }
 }
 
-void Board::addTetromino(Tetromino *tetromino) {
-    tetrominos.push_back(tetromino);
+void Board::addTetromino(TetrominoType type, Vec2 position) {
+    Tetromino *tetromino = new Tetromino(renderer, this, type, position);
     this->activeTetromino = tetromino;
-    tetromino->board = this;
+    
+    tetrominos.push_back(tetromino);
 }
 

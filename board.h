@@ -11,12 +11,14 @@ public:
     ~Board();
 
     HUD* hud;
+    SDL_Renderer* renderer;
     vector<Tetromino*> tetrominos;
 
     Tetromino *activeTetromino = nullptr;
 
-    // 1G = 1 cell per frame, 0.1G = 1 cell per 10 frames
-    int gravity = 2;
+    double gravity = 0.016666667;    // 1 cell per 60 frames
+    //double gravity = 0.05;           // 1 cell per 20 frames 
+    //double gravity = 1.0;
 
     int width = 10 * 8;
     int height = 20 * 8;
@@ -24,8 +26,8 @@ public:
     void handleEvent(const SDL_Event& e);
     void update();
 
-    void addTetromino(Tetromino *tetromino);
-    void drawGrid(SDL_Renderer *renderer);
-    void drawTetrominos(SDL_Renderer *renderer);
+    void addTetromino(TetrominoType type, Vec2 position);
+    void drawGrid();
+    void drawTetrominos();
     
 };
