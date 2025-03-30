@@ -25,7 +25,6 @@ Board::~Board(){
 void Board::addRandomTetromino() {
     int randomType = rand() % 5 + 2;
     addTetromino((TetrominoType)randomType, {3, 3});
-
 }
 
 void Board::handleEvent(const SDL_Event& e) {
@@ -34,6 +33,14 @@ void Board::handleEvent(const SDL_Event& e) {
 
 void Board::update() {
     activeTetromino->update();
+    if (activeTetromino->position.y == height - activeTetromino->texture->height) {
+        if (lockFrameCount == lockFrames) {
+            activeTetromino = nullptr;
+            addRandomTetromino();
+            lockFrameCount = 0;
+        }
+        lockFrameCount++;
+    }
 }
 
 void Board::drawTetrominos() {

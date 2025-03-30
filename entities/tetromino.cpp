@@ -60,7 +60,7 @@ void Tetromino::rotate() {
 }
 
 void Tetromino::drop() {
-    trueYPos += board->gravity; // use gravity instead
+    trueYPos += board->gravity;
     if (floor(trueYPos) == (float)trueYPos) {
         position.y += 8;
         if (!inBounds()) {

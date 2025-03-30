@@ -76,7 +76,7 @@ void changeLevel(int level) {
             break;
         case 2:
             delete currentBoard;
-            currentBoard = new Board(renderer, 0.05);
+            currentBoard = new Board(renderer, 0.05); // stops halfway down?
             break;
         case 3:
             delete currentBoard;

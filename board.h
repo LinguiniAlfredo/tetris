@@ -24,6 +24,9 @@ public:
     int width = 10 * 8;
     int height = 20 * 8;
 
+    int lockFrames = 30;
+    int lockFrameCount = 0;
+
     void handleEvent(const SDL_Event& e);
     void update();
 
