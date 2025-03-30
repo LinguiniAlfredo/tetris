@@ -24,6 +24,8 @@ const int SCREEN_HEIGHT = BOARD_HEIGHT_PX * 4;
 
 SDL_Renderer *renderer = nullptr;
 SDL_Window *window = nullptr;
+Board *currentBoard = nullptr;
+
 
 bool init() {
 	bool success = true;
@@ -64,11 +66,31 @@ bool init() {
 	return success;
 }
 
-void reset() {
-
+void changeLevel(int level) {
+    switch(level) {
+        case 0:  // menu
+            break;
+        case 1:
+            delete currentBoard;
+            currentBoard = new Board(renderer, 0.016666667);
+            currentBoard->addTetromino(T, {3,3});  // change to board->start
+            break;
+        case 2:
+            delete currentBoard;
+            currentBoard = new Board(renderer, 0.05);
+            currentBoard->addTetromino(T, {3,3});  // change to board->start
+            break;
+        case 3:
+            delete currentBoard;
+            currentBoard = new Board(renderer, 1);
+            currentBoard->addTetromino(T, {3,3});  // change to board->start
+            break;
+        default:
+            break;
+    }
 }
 
-bool handleEvents(Board *board) {
+bool handleEvents() {
     SDL_Event e;
     bool quit = false;
     while (SDL_PollEvent(&e) != 0) {
@@ -81,30 +103,36 @@ bool handleEvents(Board *board) {
                 case SDLK_ESCAPE:
                     quit = true;
                     break;
-                case SDLK_r:
-                    reset();
+                case SDLK_1:
+                    changeLevel(1);
+                    break;
+                case SDLK_2:
+                    changeLevel(2);
+                    break;
+                case SDLK_3:
+                    changeLevel(3);
                     break;
                 default:
                     break;
             }
         }
-        board->handleEvent(e);
+        currentBoard->handleEvent(e);
     }
     return quit;
 }
 
 
-void update(Board *board) {
-    board->update();
+void update() {
+    currentBoard->update();
 }
 
 
-void render(Board *board) {
+void render() {
     SDL_SetRenderDrawColor(renderer, 0xF5, 0xF5, 0xF5, 0xFF);
     SDL_RenderClear(renderer);
 
-    board->drawGrid();
-    board->drawTetrominos();
+    currentBoard->drawGrid();
+    currentBoard->drawTetrominos();
 
     //board->hud->draw();
     SDL_RenderPresent(renderer);
@@ -115,8 +143,8 @@ void gameLoop() {
     Timer deltaTimer;
     Timer capTimer;
 
-    Board *board = new Board(renderer);
-    board->addTetromino(T, {3,3});
+    changeLevel(1);
+    currentBoard->addTetromino(T, {3,3});  // change to board->start
 
     bool quit = false;
     uint32_t countedFrames = 0;
@@ -130,13 +158,13 @@ void gameLoop() {
         deltaTimer.start();
         capTimer.start();
 
-        quit = handleEvents(board);
+        quit = handleEvents();
 
-        update(board);
-        render(board);
+        update();
+        render();
 
         fps = countedFrames / (totalTimer.getTicks() / 1000.f);
-        board->hud->update(fps);
+        currentBoard->hud->update(fps);
         //deltaTime = deltaTimer.getTicks() / 1000.f;
 
         countedFrames++;
@@ -145,8 +173,7 @@ void gameLoop() {
             SDL_Delay(TICKS_PER_FRAME - ticks);
         }
     }
-    
-    delete board;
+    delete currentBoard;
 }
 
 void close() {		

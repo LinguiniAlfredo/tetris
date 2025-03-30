@@ -6,6 +6,12 @@ Board::Board(SDL_Renderer *renderer) {
     this->hud = new HUD(renderer);
 }
 
+Board::Board(SDL_Renderer *renderer, double gravity) {
+    this->renderer = renderer;
+    this->hud = new HUD(renderer);
+    this->gravity = gravity;
+}
+
 Board::~Board(){
     delete hud;
     for (Tetromino* tetromino : tetrominos) {

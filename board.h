@@ -7,7 +7,8 @@
 
 class Board {
 public:
-    Board(SDL_Renderer* renderer);
+    Board(SDL_Renderer *renderer);
+    Board(SDL_Renderer *renderer, double gravity);
     ~Board();
 
     HUD* hud;
