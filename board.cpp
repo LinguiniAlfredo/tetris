@@ -48,6 +48,11 @@ void Board::drawGrid() {
             SDL_RenderDrawLine(renderer, 0, y, width, y);
         }
     }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_Rect *gridBorder = new SDL_Rect{ -1, 0, width + 2, height + 2 };
+    SDL_RenderDrawRect(renderer, gridBorder);
+    delete gridBorder;
 }
 
 void Board::prepTetrominos() {
