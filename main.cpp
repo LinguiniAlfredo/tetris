@@ -131,7 +131,7 @@ void render() {
     currentBoard->drawGrid();
     currentBoard->drawTetrominos();
 
-    //board->hud->draw();
+    currentBoard->hud->draw();
     SDL_RenderPresent(renderer);
 }
 
@@ -161,7 +161,6 @@ void gameLoop() {
 
         fps = countedFrames / (totalTimer.getTicks() / 1000.f);
         currentBoard->hud->update(fps);
-        //deltaTime = deltaTimer.getTicks() / 1000.f;
 
         countedFrames++;
         int ticks = capTimer.getTicks();

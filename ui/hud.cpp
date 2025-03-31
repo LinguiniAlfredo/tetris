@@ -7,8 +7,8 @@ HUD::HUD() {
 }
 
 HUD::HUD(SDL_Renderer *renderer) {
-	this->font = TTF_OpenFont("resources/fonts/nes.ttf", 28);
-	this->fps_texture = new Texture(renderer, "0", font, color, 15,5);
+	this->font = TTF_OpenFont("resources/fonts/bebas.ttf", 28);
+	this->fps_texture = new Texture(renderer, "FPS: 0", font, color, 15,5);
 }
 
 HUD::~HUD() {
@@ -25,16 +25,14 @@ HUD::~HUD() {
 
 void HUD::update(float fps) {
 	updateFPS(fps);
-	//updateCoins()
-	//updateLife()
+    //updatePoints();
 }
 
 void HUD::draw() const {
 	if (fps_texture != nullptr) {
-		fps_texture->render(1, 1);
+		fps_texture->render(fpsPosition.x, fpsPosition.y);
 	}
-	//coins_texture->render();
-	//life_texture->render();
+
 }
 
 void HUD::updateFPS(float value) {
@@ -43,5 +41,8 @@ void HUD::updateFPS(float value) {
 		tmp = fps_texture->renderer;
 		delete fps_texture;
 	}
-	fps_texture = new Texture(tmp, std::to_string((int)round(value)), font, color, 15, 5);
+	fps_texture = new Texture(tmp, "FPS: " + std::to_string((int)round(value)), font, color, 20, 10);
+}
+
+void HUD::updatePoints(float value) {
 }
