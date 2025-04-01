@@ -24,6 +24,7 @@ void Board::handleEvent(const SDL_Event& e) {
 
 void Board::update() {
     activeTetromino->update();
+    // TODO - this wont work with stacked pieces
     if (activeTetromino->position.y == height - activeTetromino->texture->height) {
         if (lockFrameCount == lockFrames) {
             cycleTetrominos();

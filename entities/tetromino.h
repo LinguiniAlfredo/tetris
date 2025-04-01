@@ -29,14 +29,16 @@ public:
     Collision *collider = nullptr;
 
     Vec2 position;
+    Vec2 velocity = {0, 0};
     double trueYPos;
 
-    void checkCollisions();
+    bool checkCollisions();
     void handleEvent(const SDL_Event& e);
     void update();
     void draw() const;
     void rotate();
     void drop();
+    void moveX();
 
     bool inBounds();
     bool colliding = false;

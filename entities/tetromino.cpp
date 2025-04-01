@@ -26,27 +26,19 @@ void Tetromino::handleEvent(const SDL_Event& e) {
     if (e.type == SDL_KEYDOWN) {
         switch (e.key.keysym.sym) {
             case SDLK_a:
-                position.x -= 8;
-                if (!inBounds() || colliding) {
-                    position.x += 8;
-                }
+                velocity.x -= 8;
                 break;
             case SDLK_s:
                 // soft drop (increases gravity)
-                if (!board->softDrop) {
-                    trueYPos = (float)ceil(trueYPos);
-                }
                 board->softDrop = true;
                 break;
             case SDLK_d:
-                position.x += 8;
-                if (!inBounds() || colliding) {
-                    position.x -= 8;
-                }
+                velocity.x += 8;
                 break;
             case SDLK_SPACE:
                 // hard drop (snaps to bottom)
-                position.y = board->height - texture->height;
+                // TODO - cant snap to bottom, will clip through stacked pieces
+                //position.y = board->height - texture->height;
                 break;
             default:
                 break;
@@ -61,7 +53,7 @@ void Tetromino::handleEvent(const SDL_Event& e) {
     }
 }
 
-void Tetromino::checkCollisions() {
+bool Tetromino::checkCollisions() {
     for (Tetromino *piece : board->tetrominos) {
         if (piece != this) {
             if (SDL_HasIntersection(collider->box, piece->collider->box)) {
@@ -72,12 +64,21 @@ void Tetromino::checkCollisions() {
             }
         }
     }
+    return colliding;
 }
 
 void Tetromino::update() {
+    moveX();
     drop();
+}
+
+void Tetromino::moveX() {
+    position.x += velocity.x;
+    if (!inBounds() || checkCollisions()) {
+        position.x -= velocity.x;
+    }
     collider->box->x = position.x;
-    collider->box->y = position.y;
+    velocity.x = 0;
 }
 
 void Tetromino::draw() const {
@@ -106,6 +107,7 @@ void Tetromino::drop() {
             position.y -= 8;
         }
     }
+    collider->box->y = position.y;
 }
 
 bool Tetromino::inBounds() {
