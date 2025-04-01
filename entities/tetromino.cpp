@@ -1,5 +1,6 @@
 #include "tetromino.h"
 #include "../board.h"
+#include "../components/collision.h"
 #include <cmath>
 
 using namespace std;
@@ -12,13 +13,13 @@ Tetromino::Tetromino(SDL_Renderer *renderer, Board *board,
     this->texture = acquireTetrominoTexture(type, renderer);
     this->position = position;
     this->trueYPos = (float) position.y;
+    this->collider = new Collision(renderer, position.x, position.y, 
+            texture->width, texture->height);
 }
 
 Tetromino::~Tetromino() {
-    if (texture != nullptr) {
-        delete texture;
-        texture = nullptr;
-    }
+    delete texture;
+    delete collider;
 }
 
 void Tetromino::handleEvent(const SDL_Event& e) {
@@ -26,17 +27,20 @@ void Tetromino::handleEvent(const SDL_Event& e) {
         switch (e.key.keysym.sym) {
             case SDLK_a:
                 position.x -= 8;
-                if (!inBounds()) {
+                if (!inBounds() || colliding) {
                     position.x += 8;
                 }
                 break;
             case SDLK_s:
                 // soft drop (increases gravity)
+                if (!board->softDrop) {
+                    trueYPos = (float)ceil(trueYPos);
+                }
                 board->softDrop = true;
                 break;
             case SDLK_d:
                 position.x += 8;
-                if (!inBounds()) {
+                if (!inBounds() || colliding) {
                     position.x -= 8;
                 }
                 break;
@@ -57,8 +61,23 @@ void Tetromino::handleEvent(const SDL_Event& e) {
     }
 }
 
+void Tetromino::checkCollisions() {
+    for (Tetromino *piece : board->tetrominos) {
+        if (piece != this) {
+            if (SDL_HasIntersection(collider->box, piece->collider->box)) {
+                colliding = true;
+                break;
+            } else {
+                colliding = false;
+            }
+        }
+    }
+}
+
 void Tetromino::update() {
     drop();
+    collider->box->x = position.x;
+    collider->box->y = position.y;
 }
 
 void Tetromino::draw() const {

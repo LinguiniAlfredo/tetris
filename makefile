@@ -1,4 +1,4 @@
-OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/tetromino.o ./build/board.o ./build/vec2.o
+OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/tetromino.o ./build/board.o ./build/vec2.o ./build/collision.o
 
 CC = g++
 OPTIONS = -Wall -g
@@ -10,6 +10,9 @@ all : $(OBJS)
 
 build/texture.o : components/texture.cpp
 	$(CC) components/texture.cpp -c -w $(LINKER_FLAGS) -o ./build/texture.o
+
+build/collision.o : components/collision.cpp
+	$(CC) components/collision.cpp -c -w $(LINKER_FLAGS) -o ./build/collision.o
 
 build/timer.o : utils/timer.cpp
 	$(CC) utils/timer.cpp -c -w $(LINKER_FLAGS) -o ./build/timer.o

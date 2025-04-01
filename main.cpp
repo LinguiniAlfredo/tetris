@@ -12,6 +12,7 @@
 #include "ui/hud.h"
 #include "utils/timer.h"
 #include "entities/tetromino.h"
+#include "components/collision.h"
 
 using namespace std;
 
@@ -21,6 +22,8 @@ const int BOARD_WIDTH_PX = 15 * 8;
 const int BOARD_HEIGHT_PX = 20 * 8;
 const int SCREEN_WIDTH = BOARD_WIDTH_PX * 4;
 const int SCREEN_HEIGHT = BOARD_HEIGHT_PX * 4;
+
+bool debug = false;
 
 SDL_Renderer *renderer = nullptr;
 SDL_Window *window = nullptr;
@@ -87,6 +90,22 @@ void changeLevel(int level) {
     }
 }
 
+void toggleDebug() {
+    debug = !debug;
+}
+
+void renderColliders() {
+
+   for (Tetromino *piece : currentBoard->tetrominos) {
+       if (piece->colliding) {
+           SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+       } else {
+           SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+       }
+       SDL_RenderDrawRect(renderer, piece->collider->box);
+   }
+}
+
 bool handleEvents() {
     SDL_Event e;
     bool quit = false;
@@ -109,6 +128,9 @@ bool handleEvents() {
                 case SDLK_3:
                     //changeLevel(3);
                     break;
+                case SDLK_F1:
+                    toggleDebug();
+                    break;
                 default:
                     break;
             }
@@ -123,15 +145,18 @@ void update() {
     currentBoard->update();
 }
 
-
 void render() {
     SDL_SetRenderDrawColor(renderer, 0xF5, 0xF5, 0xF5, 0xFF);
     SDL_RenderClear(renderer);
 
     currentBoard->drawGrid();
     currentBoard->drawTetrominos();
-
     currentBoard->hud->draw();
+
+    if (debug) {
+        renderColliders();
+    }
+
     SDL_RenderPresent(renderer);
 }
 
