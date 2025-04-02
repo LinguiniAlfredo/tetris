@@ -9,4 +9,5 @@ public:
     int y;
 
     void operator+=(const Vec2& rhs);
+    bool operator==(const Vec2& rhs);
 };

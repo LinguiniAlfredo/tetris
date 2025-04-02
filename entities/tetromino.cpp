@@ -68,17 +68,21 @@ bool Tetromino::checkCollisions() {
 }
 
 void Tetromino::update() {
+    Vec2 initialPosition = position;
+
     moveX();
     drop();
-}
 
-void Tetromino::moveX() {
-    position.x += velocity.x;
-    if (!inBounds() || checkCollisions()) {
-        position.x -= velocity.x;
+    if (position.y == initialPosition.y) {
+        if (board->lockFrameCount == board->lockFrames + 60) {
+            board->cycleTetrominos();
+            board->lockFrameCount = 0;
+        } else {
+            board->lockFrameCount++;
+        }
+    } else {
+        board->lockFrameCount = 0;
     }
-    collider->box->x = position.x;
-    velocity.x = 0;
 }
 
 void Tetromino::draw() const {
@@ -91,30 +95,41 @@ void Tetromino::rotate() {
 
 }
 
+void Tetromino::moveX() {
+    collider->box->x += velocity.x;
+    if (inBounds() && !checkCollisions()) {
+        position.x += velocity.x;
+    } else {
+        collider->box->x -= velocity.x;
+    }
+    velocity.x = 0;
+}
+
 void Tetromino::drop() {
     trueYPos += board->gravity;
     // TODO - use an epsilon for this instead of casting
     if (floor(trueYPos) == (float)trueYPos) {
-        position.y += 8;
+        collider->box->y += 8;
+        if (inBounds() && !checkCollisions()) {
+            position.y += 8;
+        } else {
+            collider->box->y -= 8;
+        }
 
         if (board->softDrop) {
             board->gravity = board->softDropGravity;
         } else {
             board->gravity = board->initialGravity;
         }
-
-        if (!inBounds()) {
-            position.y -= 8;
-        }
     }
-    collider->box->y = position.y;
 }
 
 bool Tetromino::inBounds() {
-    return position.x >= 0 && 
-           position.y >= 0 && 
-           position.x <= board->width - texture->width && 
-           position.y <= board->height - texture->height;
+    return collider->box->x >= 0 && 
+           collider->box->y >= 0 && 
+           collider->box->x <= board->width - collider->box->w && 
+           collider->box->y <= board->height - collider->box->h;
+
 }
 
 Texture* Tetromino::acquireTetrominoTexture(TetrominoType type, SDL_Renderer *renderer) {

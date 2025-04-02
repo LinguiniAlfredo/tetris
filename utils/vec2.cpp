@@ -18,3 +18,7 @@ void Vec2::operator+=(const Vec2& rhs) {
     this->y = tmpy;
 }
 
+bool Vec2::operator==(const Vec2& rhs) {
+    return this->x == rhs.x && this->y == rhs.y;
+}
+

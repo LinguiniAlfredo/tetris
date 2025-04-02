@@ -34,13 +34,10 @@ public:
  
     void handleEvent(const SDL_Event& e);
     void update();
-
     void drawGrid();
     void drawTetrominos();
-    
-private:
+    void cycleTetrominos();
     void prepTetrominos();
     void addRandomTetromino(bool bagPiece);
-    void cycleTetrominos();
     void addTetromino(TetrominoType type, bool bagPiece);
 };
