@@ -37,8 +37,8 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 break;
             case SDLK_SPACE:
                 // hard drop (snaps to bottom)
-                // TODO - cant snap to bottom, will clip through stacked pieces
-                //position.y = board->height - texture->height;
+                // TODO - increase gravity like softDrop
+                // but with no latency
                 break;
             default:
                 break;
@@ -67,12 +67,7 @@ bool Tetromino::checkCollisions() {
     return colliding;
 }
 
-void Tetromino::update() {
-    Vec2 initialPosition = position;
-
-    moveX();
-    drop();
-
+void Tetromino::checkLock(Vec2 initialPosition) {
     if (position.y == initialPosition.y) {
         if (board->lockFrameCount == board->lockFrames + 60) {
             board->cycleTetrominos();
@@ -83,6 +78,14 @@ void Tetromino::update() {
     } else {
         board->lockFrameCount = 0;
     }
+}
+
+void Tetromino::update() {
+    Vec2 initialPosition = position;
+
+    moveX();
+    drop();
+    checkLock(initialPosition);
 }
 
 void Tetromino::draw() const {

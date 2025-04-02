@@ -22,7 +22,7 @@ class Tetromino
 public:
     Tetromino(SDL_Renderer *renderer, Board *board, TetrominoType type, Vec2 position);
     ~Tetromino();
-
+ 
     TetrominoType type;
     Board *board = nullptr;
     Texture *texture = nullptr;
@@ -39,6 +39,7 @@ public:
     void rotate();
     void drop();
     void moveX();
+    void checkLock(Vec2 initialPosition);
 
     bool inBounds();
     bool colliding = false;

@@ -1,5 +1,6 @@
 #include "board.h"
 #include "utils/vec2.h"
+#include "components/collision.h"
 
 using namespace std;
 
@@ -61,6 +62,8 @@ void Board::addRandomTetromino(bool bagPiece) {
 
 void Board::cycleTetrominos() {
     nextTetromino->position = spawnPosition;
+    nextTetromino->collider->box->x = spawnPosition.x;
+    nextTetromino->collider->box->y = spawnPosition.y;
     activeTetromino = nextTetromino;
     addRandomTetromino(true);
 }
