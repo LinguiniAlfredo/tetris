@@ -69,6 +69,7 @@ bool Tetromino::checkCollisions() {
 
 void Tetromino::checkLock(Vec2 initialPosition) {
     if (position.y == initialPosition.y) {
+        // TODO - check trueposition to be quicker
         if (board->lockFrameCount == board->lockFrames + 60) {
             board->cycleTetrominos();
             board->lockFrameCount = 0;
@@ -110,7 +111,7 @@ void Tetromino::moveX() {
 
 void Tetromino::drop() {
     trueYPos += board->gravity;
-    // TODO - use an epsilon for this instead of casting
+    // TODO - move collider by true position to check faster
     if (floor(trueYPos) == (float)trueYPos) {
         collider->box->y += 8;
         if (inBounds() && !checkCollisions()) {
