@@ -10,16 +10,20 @@ Tetromino::Tetromino(SDL_Renderer *renderer, Board *board,
 
     this->board = board;
     this->type = type;
-    this->texture = acquireTetrominoTexture(type, renderer);
     this->position = position;
     this->trueYPos = (float) position.y;
-    this->collider = new Collision(renderer, position.x, position.y, 
-            texture->width, texture->height);
+    
+    acquireTetrominoTextures(type, renderer);
+    generateColliders(renderer);
 }
 
 Tetromino::~Tetromino() {
-    delete texture;
-    delete collider;
+    for (auto const& [texture, pos] : textures) {
+        delete texture;
+    }
+    for (int i = 0; i < colliders.size(); i++) {
+        delete colliders.at(i);
+    }
 }
 
 void Tetromino::handleEvent(const SDL_Event& e) {
@@ -54,14 +58,19 @@ void Tetromino::handleEvent(const SDL_Event& e) {
 }
 
 bool Tetromino::checkCollisions() {
-    for (Tetromino *piece : board->tetrominos) {
-        if (piece != this) {
-            if (SDL_HasIntersection(collider->box, piece->collider->box)) {
-                colliding = true;
-                break;
-            } else {
-                colliding = false;
+    for (Collision *thisCollider : colliders) {
+        for (Tetromino *piece : board->tetrominos) {
+            if (piece != this) {
+                for (Collision *collider : piece->colliders) {
+                    if (SDL_HasIntersection(thisCollider->box, collider->box)) {
+                        colliding = true;
+                        break;
+                    } else {
+                        colliding = false;
+                    }
+                }
             }
+
         }
     }
     return colliding;
@@ -90,8 +99,10 @@ void Tetromino::update() {
 }
 
 void Tetromino::draw() const {
-    if (texture != nullptr) {
-        texture->render(position.x, position.y);
+    if (textures.size() > 0) {
+        for (auto const& [texture,pos] : textures) {
+            texture->render(position.x + pos.x, position.y + pos.y);
+        }
     }
 }
 
@@ -100,11 +111,15 @@ void Tetromino::rotate() {
 }
 
 void Tetromino::moveX() {
-    collider->box->x += velocity.x;
+    for (Collision *collider : colliders) {
+        collider->box->x += velocity.x;
+    }
     if (inBounds() && !checkCollisions()) {
         position.x += velocity.x;
     } else {
-        collider->box->x -= velocity.x;
+        for (Collision *collider : colliders) {
+            collider->box->x -= velocity.x;
+        }
     }
     velocity.x = 0;
 }
@@ -113,11 +128,17 @@ void Tetromino::drop() {
     trueYPos += board->gravity;
     // TODO - move collider by true position to check faster
     if (floor(trueYPos) == (float)trueYPos) {
-        collider->box->y += 8;
+
+        for(Collision *collider : colliders) {
+            collider->box->y += 8;
+        }
+
         if (inBounds() && !checkCollisions()) {
             position.y += 8;
         } else {
-            collider->box->y -= 8;
+            for (Collision *collider : colliders) {
+                collider->box->y -= 8;
+            }
         }
 
         if (board->softDrop) {
@@ -129,15 +150,22 @@ void Tetromino::drop() {
 }
 
 bool Tetromino::inBounds() {
-    return collider->box->x >= 0 && 
-           collider->box->y >= 0 && 
-           collider->box->x <= board->width - collider->box->w && 
-           collider->box->y <= board->height - collider->box->h;
-
+    for (Collision *collider : colliders) {
+        if (collider->box->x < 0 || 
+            collider->box->y < 0 || 
+            collider->box->x > board->width - collider->box->w ||
+            collider->box->y > board->height - collider->box->h) {
+            return false;
+        }
+    }
+    return true;
 }
 
-Texture* Tetromino::acquireTetrominoTexture(TetrominoType type, SDL_Renderer *renderer) {
+void Tetromino::acquireTetrominoTextures(TetrominoType type, 
+        SDL_Renderer *renderer) {
+
     string filepath;
+
     switch(type) {
         case I:
             filepath = "resources/textures/I.png";
@@ -158,11 +186,21 @@ Texture* Tetromino::acquireTetrominoTexture(TetrominoType type, SDL_Renderer *re
             filepath = "resources/textures/J.png";
             break;
         case L:
-            filepath = "resources/textures/L.png";
+            constructLTexture(renderer, "resources/textures/L_single.png");
             break;
-        
     }
-    return new Texture(renderer, filepath, 0, 0);
+}
 
+void Tetromino::constructLTexture(SDL_Renderer *renderer, string filepath) {
+   for (int i = 0; i < 4; i++) {
+       Vec2 relPosition = { i, 0 };
+       textures.insert({new Texture(renderer, filepath, 0, 0), relPosition});
+   }
+}
 
+void Tetromino::generateColliders(SDL_Renderer *renderer) {
+    for (auto const& [texture, pos] : textures) {
+        colliders.push_back(new Collision(renderer, pos.x, pos.y, 
+            texture->width, texture->height));
+    }
 }
