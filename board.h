@@ -13,6 +13,7 @@ public:
     HUD* hud;
     SDL_Renderer* renderer;
     vector<Tetromino*> tetrominos;
+    vector<Tetromino*> tetrominoTrash;
 
     Tetromino *activeTetromino = nullptr;
     Tetromino *nextTetromino = nullptr;
@@ -40,4 +41,10 @@ public:
     void prepTetrominos();
     void addRandomTetromino(bool bagPiece);
     void addTetromino(TetrominoType type, bool bagPiece);
+    void checkLineClear();
+    bool containsBlock(int x, int y);
+    void clearLine(int y);
+    void movePiecesDown(int y, int linesCleared);
+
+    void removeTrash();
 };

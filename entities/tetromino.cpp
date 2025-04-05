@@ -18,10 +18,10 @@ Tetromino::Tetromino(SDL_Renderer *renderer, Board *board,
 }
 
 Tetromino::~Tetromino() {
-    for (auto const& [texture, pos] : textures) {
+    for (auto [texture, pos] : textures) {
         delete texture;
     }
-    for (auto const& [collider, pos] : colliders) {
+    for (auto [collider, pos] : colliders) {
         delete collider;
     }
 }
@@ -80,6 +80,7 @@ void Tetromino::checkLock(Vec2 initialPosition) {
     if (position.y == initialPosition.y) {
         // TODO - check trueposition to be quicker
         if (board->lockFrameCount == board->lockFrames + 60) {
+            board->checkLineClear();
             board->cycleTetrominos();
             board->lockFrameCount = 0;
         } else {

@@ -2,6 +2,7 @@
 #include "../utils/vec2.h"
 #include "../components/texture.h"
 #include <map>
+#include <vector>
 #include <string>
 
 class Board;
@@ -29,6 +30,8 @@ public:
     Board *board = nullptr;
     map<Texture*, Vec2> textures;
     map<Collision*, Vec2> colliders;
+    vector<Texture*> textureTrash;
+    vector<Collision*> colliderTrash;
 
     Vec2 position;
     Vec2 velocity = {0, 0};
