@@ -47,7 +47,6 @@ public:
     bool colliding = false;
 
 private:
-    void acquireTetrominoTextures(TetrominoType type, SDL_Renderer *renderer);
-    void constructITexture(SDL_Renderer *renderer, string filepath);
+    void constructTetromino(TetrominoType type, SDL_Renderer *renderer);
     void generateColliders(SDL_Renderer *renderer);
 };

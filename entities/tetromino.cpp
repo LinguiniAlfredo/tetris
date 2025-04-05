@@ -13,7 +13,7 @@ Tetromino::Tetromino(SDL_Renderer *renderer, Board *board,
     this->position = position;
     this->trueYPos = (float) position.y;
     
-    acquireTetrominoTextures(type, renderer);
+    constructTetromino(type, renderer);
     generateColliders(renderer);
 }
 
@@ -161,40 +161,61 @@ bool Tetromino::inBounds() {
     return true;
 }
 
-void Tetromino::acquireTetrominoTextures(TetrominoType type, 
+void Tetromino::constructTetromino(TetrominoType type, 
         SDL_Renderer *renderer) {
 
     string filepath;
 
     switch(type) {
         case I:
-            constructITexture(renderer, "resources/textures/I_single.png");
+            filepath = "resources/textures/I_single.png";
+            for (int i = 0; i < 4; i++) {
+                textures.insert( {new Texture(renderer, filepath, 0, 0), { i, 0 } });
+            }
             break;
         case O:
-            filepath = "resources/textures/O.png";
+            filepath = "resources/textures/O_single.png";
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0, 0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1, 0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0, 1 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1, 1 } });
             break;
         case T:
-            filepath = "resources/textures/T.png";
+            filepath = "resources/textures/T_single.png";
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1, -1 } });
             break;
         case S:
-            filepath = "resources/textures/S.png";
+            filepath = "resources/textures/S_single.png";
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1, -1 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2, -1 } });
             break;
         case Z:
-            filepath = "resources/textures/Z.png";
+            filepath = "resources/textures/Z_single.png";
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  1 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2,  1 } });
             break;
         case J:
-            filepath = "resources/textures/J.png";
+            filepath = "resources/textures/J_single.png";
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  1 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  1 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2,  1 } });
             break;
         case L:
+            filepath = "resources/textures/L_single.png";
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2,  0 } });
+            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2, -1 } });
             break;
     }
-}
-
-void Tetromino::constructITexture(SDL_Renderer *renderer, string filepath) {
-   for (int i = 0; i < 4; i++) {
-       Vec2 relPosition = { i, 0 };
-       textures.insert({new Texture(renderer, filepath, 0, 0), relPosition});
-   }
 }
 
 void Tetromino::generateColliders(SDL_Renderer *renderer) {
