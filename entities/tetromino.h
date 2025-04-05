@@ -2,7 +2,6 @@
 #include "../utils/vec2.h"
 #include "../components/texture.h"
 #include <map>
-#include <vector>
 #include <string>
 
 class Board;
@@ -29,7 +28,7 @@ public:
     TetrominoType type;
     Board *board = nullptr;
     map<Texture*, Vec2> textures;
-    vector<Collision*> colliders;
+    map<Collision*, Vec2> colliders;
 
     Vec2 position;
     Vec2 velocity = {0, 0};
@@ -49,6 +48,6 @@ public:
 
 private:
     void acquireTetrominoTextures(TetrominoType type, SDL_Renderer *renderer);
-    void constructLTexture(SDL_Renderer *renderer, string filepath);
+    void constructITexture(SDL_Renderer *renderer, string filepath);
     void generateColliders(SDL_Renderer *renderer);
 };

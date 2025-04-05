@@ -102,7 +102,7 @@ void renderColliders() {
        } else {
            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
        }
-       for (Collision *collider : piece->colliders) {
+       for (auto const& [collider, pos]: piece->colliders) {
            SDL_RenderDrawRect(renderer, collider->box);
        }
    }

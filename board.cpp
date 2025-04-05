@@ -58,14 +58,14 @@ void Board::addRandomTetromino(bool bagPiece) {
     // TODO - add regulation "bag" system
     int randomType = rand() % 7 + 0;
     //addTetromino((TetrominoType)randomType, bagPiece);
-    addTetromino(L, bagPiece);
+    addTetromino(I, bagPiece);
 }
 
 void Board::cycleTetrominos() {
     nextTetromino->position = spawnPosition;
-    for (Collision *collider : nextTetromino->colliders) {
-        collider->box->x = spawnPosition.x;
-        collider->box->y = spawnPosition.y;
+    for (auto const& [collider, relPos] : nextTetromino->colliders) {
+        collider->box->x = spawnPosition.x + relPos.x;
+        collider->box->y = spawnPosition.y + relPos.y;
     }
     activeTetromino = nextTetromino;
     addRandomTetromino(true);
