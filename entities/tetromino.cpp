@@ -11,6 +11,7 @@ Tetromino::Tetromino(SDL_Renderer *renderer, Board *board,
     this->board = board;
     this->type = type;
     this->position = position;
+    this->ghostPosition = position;
     this->trueYPos = (float) position.y;
     
     constructTetromino(type, renderer);
@@ -23,6 +24,9 @@ Tetromino::~Tetromino() {
     }
     for (auto [collider, pos] : colliders) {
         delete collider;
+    }
+    for (auto [texture, pos] : ghostTextures) {
+        delete texture;
     }
 }
 
@@ -45,7 +49,7 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 break;
             case SDLK_SPACE:
                 // hard drop (snaps to bottom)
-                // TODO - implement ghost piece, then snap to ghost location
+
                 break;
             default:
                 break;
@@ -59,6 +63,18 @@ void Tetromino::handleEvent(const SDL_Event& e) {
         }
     }
 }
+
+void Tetromino::update() {
+    Vec2 initialPosition = position;
+
+    findGhostPosition();
+
+    moveX();
+    drop();
+
+    checkLock(initialPosition);
+}
+
 
 bool Tetromino::checkCollisions() {
     for (auto const& [thisCollider, thisPos]: colliders) {
@@ -93,19 +109,15 @@ void Tetromino::checkLock(Vec2 initialPosition) {
     }
 }
 
-void Tetromino::update() {
-    Vec2 initialPosition = position;
-
-    moveX();
-    drop();
-
-    checkLock(initialPosition);
-}
-
 void Tetromino::draw() const {
     if (textures.size() > 0) {
         for (auto const& [texture,pos] : textures) {
             texture->render(position.x + pos.x, position.y + pos.y);
+        }
+    }
+    if (board->activeTetromino == this) {
+        for (auto const& [texture,pos] : ghostTextures) {
+            texture->render(ghostPosition.x + pos.x, ghostPosition.y + pos.y);
         }
     }
 }
@@ -159,6 +171,7 @@ void Tetromino::drop() {
     }
 }
 
+// TODO - move this function into checkCollisions
 bool Tetromino::inBounds() {
     for (auto const& [collider, pos] : colliders) {
         if (collider->box->x < 0 || 
@@ -166,11 +179,33 @@ bool Tetromino::inBounds() {
             collider->box->x > board->width - collider->box->w ||
             collider->box->y > board->height - collider->box->h) {
             return false;
-        }
+            }
     }
     return true;
 }
 
+void Tetromino::findGhostPosition() {
+    int numBlocksMoved = 0;
+    ghostPosition.y = position.y;
+
+    while (inBounds() && !checkCollisions()) {
+        for(auto [collider, pos] : colliders) {
+            collider->box->y += 8;
+        }
+        numBlocksMoved++;
+    }
+
+    for (auto [collider, pos] : colliders) {
+        collider->box->y -= 8 * numBlocksMoved;
+    }
+    numBlocksMoved--;
+
+    ghostPosition.y += 8 * numBlocksMoved;
+    ghostPosition.x = position.x;
+    // TODO - Add rotation somehow once that works with main piece
+}
+
+// TODO - is there a prettier way?
 void Tetromino::constructTetromino(TetrominoType type, 
         SDL_Renderer *renderer) {
 
@@ -178,52 +213,83 @@ void Tetromino::constructTetromino(TetrominoType type,
 
     switch(type) {
         case I:
-            filepath = "resources/textures/I_single.png";
+            filepath = "resources/textures/I";
             for (int i = 0; i < 4; i++) {
-                textures.insert( {new Texture(renderer, filepath, 0, 0), { i, 0 } });
+                textures.insert( {new Texture(renderer, filepath + "_single.png", 0, 0), { i, 0 } });
+                ghostTextures.insert( {new Texture(renderer, filepath + "_ghost.png", 0, 0), { i, 0 } });
             }
             break;
         case O:
-            filepath = "resources/textures/O_single.png";
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0, 0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1, 0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0, 1 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1, 1 } });
+            filepath = "resources/textures/O";
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 0, 0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1, 0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 0, 1 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1, 1 } });
+
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0, 0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, 0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0, 1 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, 1 } });
             break;
         case T:
-            filepath = "resources/textures/T_single.png";
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1, -1 } });
+            filepath = "resources/textures/T";
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 2,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1, -1 } });
+
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, -1 } });
             break;
         case S:
-            filepath = "resources/textures/S_single.png";
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1, -1 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2, -1 } });
+            filepath = "resources/textures/S";
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1, -1 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 2, -1 } });
+
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, -1 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2, -1 } });
             break;
         case Z:
-            filepath = "resources/textures/Z_single.png";
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  1 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2,  1 } });
+            filepath = "resources/textures/Z";
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1,  1 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 2,  1 } });
+
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  1 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2,  1 } });
             break;
         case J:
-            filepath = "resources/textures/J_single.png";
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  1 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  1 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2,  1 } });
+            filepath = "resources/textures/J";
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 0,  1 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1,  1 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 2,  1 } });
+
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0,  1 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  1 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2,  1 } });
             break;
         case L:
-            filepath = "resources/textures/L_single.png";
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 0,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 1,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2,  0 } });
-            textures.insert({ new Texture(renderer, filepath, 0, 0), { 2, -1 } });
+            filepath = "resources/textures/L";
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 0,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 1,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 2,  0 } });
+            textures.insert({ new Texture(renderer, filepath + "_single.png", 0, 0), { 2, -1 } });
+
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2,  0 } });
+            ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2, -1 } });
             break;
     }
 }

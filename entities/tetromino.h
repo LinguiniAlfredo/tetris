@@ -29,11 +29,13 @@ public:
     TetrominoType type;
     Board *board = nullptr;
     map<Texture*, Vec2> textures;
+    map<Texture*, Vec2> ghostTextures;
     map<Collision*, Vec2> colliders;
     vector<Texture*> textureTrash;
     vector<Collision*> colliderTrash;
 
     Vec2 position;
+    Vec2 ghostPosition;
     Vec2 velocity = {0, 0};
     double trueYPos;
 
@@ -53,4 +55,6 @@ public:
 private:
     void constructTetromino(TetrominoType type, SDL_Renderer *renderer);
     void generateColliders(SDL_Renderer *renderer);
+    void loadGhostPiece(SDL_Renderer *renderer);
+    void findGhostPosition();
 };
