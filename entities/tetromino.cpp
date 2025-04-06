@@ -34,15 +34,18 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 break;
             case SDLK_s:
                 // soft drop (increases gravity)
+                softDropStart = true;
                 board->softDrop = true;
                 break;
             case SDLK_d:
                 velocity.x += 8;
                 break;
+            case SDLK_f:
+                rotate();
+                break;
             case SDLK_SPACE:
                 // hard drop (snaps to bottom)
-                // TODO - increase gravity like softDrop
-                // but with no latency
+                // TODO - implement ghost piece, then snap to ghost location
                 break;
             default:
                 break;
@@ -78,7 +81,6 @@ bool Tetromino::checkCollisions() {
 
 void Tetromino::checkLock(Vec2 initialPosition) {
     if (position.y == initialPosition.y) {
-        // TODO - check trueposition to be quicker
         if (board->lockFrameCount == board->lockFrames + 60) {
             board->checkLineClear();
             board->cycleTetrominos();
@@ -96,6 +98,7 @@ void Tetromino::update() {
 
     moveX();
     drop();
+
     checkLock(initialPosition);
 }
 
@@ -108,6 +111,7 @@ void Tetromino::draw() const {
 }
 
 void Tetromino::rotate() {
+
 
 }
 
@@ -126,10 +130,14 @@ void Tetromino::moveX() {
 }
 
 void Tetromino::drop() {
-    trueYPos += board->gravity;
-    // TODO - move collider by true position to check faster
-    if (floor(trueYPos) == (float)trueYPos) {
 
+    if (softDropStart) {
+        trueYPos = ceil(trueYPos);
+    } else {
+        trueYPos += board->gravity;
+    }
+
+    if (floor(trueYPos) == (float)trueYPos) {
         for(auto const& [collider, pos] : colliders) {
             collider->box->y += 8;
         }
@@ -147,6 +155,7 @@ void Tetromino::drop() {
         } else {
             board->gravity = board->initialGravity;
         }
+        softDropStart = false;
     }
 }
 

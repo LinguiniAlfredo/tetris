@@ -48,6 +48,7 @@ public:
 
     bool inBounds();
     bool colliding = false;
+    bool softDropStart = false;
 
 private:
     void constructTetromino(TetrominoType type, SDL_Renderer *renderer);
