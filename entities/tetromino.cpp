@@ -49,7 +49,6 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 break;
             case SDLK_SPACE:
                 hardDrop();
-                position.y = ghostPosition.y;
                 break;
             default:
                 break;
