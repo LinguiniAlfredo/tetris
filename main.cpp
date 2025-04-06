@@ -16,6 +16,13 @@
 
 using namespace std;
 
+// TODO - stash piece
+//      - main menu
+//      - scoring
+//      - lineclear/tetris effect
+//      - hard drop effect
+//      - music/sound
+
 const float TICKS_PER_FRAME = 1000.f / 60;
 
 const int BOARD_WIDTH_PX = 15 * 8;

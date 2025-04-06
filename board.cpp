@@ -159,7 +159,6 @@ void Board::movePiecesDown(int y, int linesCleared) {
                     }
                     piece->colliderPosition.y -= 8 * linesCleared;
                 }
-
             }
         }
     }
