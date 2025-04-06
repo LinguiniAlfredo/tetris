@@ -101,7 +101,7 @@ void Tetromino::checkLock(Vec2 initialPosition) {
         board->lockFrameCount = 0;
     }
     if (position.y == initialPosition.y) {
-        if (board->lockFrameCount == board->lockFrames + 60) {
+        if (board->lockFrameCount == board->lockFrames + 30) {
             board->checkLineClear();
             board->cycleTetrominos();
             board->lockFrameCount = 0;
