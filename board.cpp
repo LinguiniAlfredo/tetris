@@ -59,10 +59,12 @@ void Board::addRandomTetromino(bool bagPiece) {
     // TODO - add regulation "bag" system
     int randomType = rand() % 7 + 0;
     addTetromino((TetrominoType)randomType, bagPiece);
+    // addTetromino(L, bagPiece);
 }
 
 void Board::cycleTetrominos() {
     nextTetromino->position = spawnPosition;
+    nextTetromino->colliderPosition = spawnPosition;
     for (auto const& [collider, relPos] : nextTetromino->colliders) {
         collider->box->x = spawnPosition.x + relPos.x;
         collider->box->y = spawnPosition.y + relPos.y;
@@ -102,7 +104,9 @@ void Board::checkLineClear() {
             linesCleared++;
         }
     }
-    movePiecesDown(maxY, linesCleared);
+    if (linesCleared > 0) {
+        movePiecesDown(maxY, linesCleared);
+    }
 }
 
 bool Board::containsBlock(int x, int y) {
@@ -141,9 +145,10 @@ void Board::movePiecesDown(int y, int linesCleared) {
         for (auto [block, pos] : piece->textures) {
             if (pos.y < y) {
                 // TODO - refactor drop() to be able to use this here instead
-                for(auto const& [collider, pos] : piece->colliders) {
+                for(auto const& [collider, colPos] : piece->colliders) {
                     collider->box->y += 8 * linesCleared;
                 }
+                piece->colliderPosition.y += 8 * linesCleared;
 
                 if (piece->inBounds() && !piece->checkCollisions()) {
                     piece->position.y += 8 * linesCleared;
@@ -152,6 +157,7 @@ void Board::movePiecesDown(int y, int linesCleared) {
                     for (auto const& [collider, pos] : piece->colliders) {
                         collider->box->y -= 8 * linesCleared;
                     }
+                    piece->colliderPosition.y -= 8 * linesCleared;
                 }
 
             }
@@ -169,8 +175,9 @@ void Board::removeTrash() {
             piece->colliders.erase(collider);
             delete collider;
         }
-    piece->colliderTrash.clear();
-    piece->textureTrash.clear();
+
+        piece->colliderTrash.clear();
+        piece->textureTrash.clear();
     }
 
 

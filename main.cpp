@@ -98,13 +98,22 @@ void renderColliders() {
 
    for (Tetromino *piece : currentBoard->tetrominos) {
        if (piece->colliding) {
-           SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
        } else {
-           SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
        }
        for (auto const& [collider, pos]: piece->colliders) {
-           SDL_RenderDrawRect(renderer, collider->box);
+            SDL_Rect *correctedBox = new SDL_Rect {
+                piece->colliderPosition.x + pos.x, 
+                piece->colliderPosition.y + pos.y, 
+                collider->box->w, 
+                collider->box->h
+            };
+        
+            SDL_RenderDrawRect(renderer, correctedBox);
+            delete correctedBox;
        }
+
    }
 }
 
@@ -125,10 +134,10 @@ bool handleEvents() {
                     changeLevel(1);
                     break;
                 case SDLK_2:
-                    //changeLevel(2);
+                    changeLevel(2);
                     break;
                 case SDLK_3:
-                    //changeLevel(3);
+                    changeLevel(3);
                     break;
                 case SDLK_F1:
                     toggleDebug();

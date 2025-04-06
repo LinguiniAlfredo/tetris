@@ -36,14 +36,16 @@ public:
 
     Vec2 position;
     Vec2 ghostPosition;
-    Vec2 velocity = {0, 0};
+    Vec2 colliderPosition;
+    Vec2 velocity = { 0, 0 };
+    Vec2d center;
     double trueYPos;
 
     bool checkCollisions();
     void handleEvent(const SDL_Event& e);
     void update();
     void draw() const;
-    void rotate();
+    void rotate(int angle);
     void drop();
     void moveX();
     void checkLock(Vec2 initialPosition);

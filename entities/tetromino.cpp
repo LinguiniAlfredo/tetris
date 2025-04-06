@@ -12,6 +12,7 @@ Tetromino::Tetromino(SDL_Renderer *renderer, Board *board,
     this->type = type;
     this->position = position;
     this->ghostPosition = position;
+    this->colliderPosition = position;
     this->trueYPos = (float) position.y;
     
     constructTetromino(type, renderer);
@@ -45,7 +46,7 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 velocity.x += 8;
                 break;
             case SDLK_f:
-                rotate();
+                rotate(90);
                 break;
             case SDLK_SPACE:
                 hardDrop();
@@ -115,32 +116,62 @@ void Tetromino::checkLock(Vec2 initialPosition) {
 
 void Tetromino::draw() const {
     if (textures.size() > 0) {
-        for (auto const& [texture,pos] : textures) {
+        for (auto const& [texture, pos] : textures) {
             texture->render(position.x + pos.x, position.y + pos.y);
         }
     }
     if (board->activeTetromino == this) {
-        for (auto const& [texture,pos] : ghostTextures) {
+        for (auto const& [texture, pos] : ghostTextures) {
             texture->render(ghostPosition.x + pos.x, ghostPosition.y + pos.y);
         }
     }
 }
 
-void Tetromino::rotate() {
+void Tetromino::rotate(int angle) {
+    // rotx = radiusX*cos(radians) - radiusY*sin(radians)
+    // roty = radiusX*sin(radians) + radiusY*cos(radians)
 
+    double rad = angle * (M_PI/180);
+    double c = cos(rad);
+    double s = sin(rad);
 
+    for (auto& [texture, pos] : textures) {
+        double radX = pos.x - center.x;
+        double radY = pos.y - center.y;
+        pos.x = round(radX * c - radY * s + center.x);
+        pos.y = round(radX * s + radY * c + center.y);
+    }
+    for (auto& [texture, pos] : ghostTextures) {
+        double radX = pos.x - center.x;
+        double radY = pos.y - center.y;
+        pos.x = round(radX * c - radY * s + center.x);
+        pos.y = round(radX * s + radY * c + center.y);
+    }
+
+    for (auto& [collider, pos] : colliders) {
+        double radX = pos.x - center.x;
+        double radY = pos.y - center.y;
+        pos.x = round(radX * c - radY * s + center.x);
+        pos.y = round(radX * s + radY * c + center.y);
+
+        collider->box->x = colliderPosition.x + pos.x;
+        collider->box->y = colliderPosition.y + pos.y;
+    }
 }
 
 void Tetromino::moveX() {
     for (auto const& [collider, pos]: colliders) {
         collider->box->x += velocity.x;
     }
+    colliderPosition.x += velocity.x;
+
     if (inBounds() && !checkCollisions()) {
         position.x += velocity.x;
     } else {
         for (auto const& [collider, pos]: colliders) {
             collider->box->x -= velocity.x;
         }
+        colliderPosition.x -= velocity.x;
     }
     velocity.x = 0;
 }
@@ -157,6 +188,7 @@ void Tetromino::drop() {
         for(auto const& [collider, pos] : colliders) {
             collider->box->y += 8;
         }
+        colliderPosition.y += 8;
 
         if (inBounds() && !checkCollisions()) {
             position.y += 8;
@@ -164,6 +196,7 @@ void Tetromino::drop() {
             for (auto const& [collider, pos] : colliders) {
                 collider->box->y -= 8;
             }
+            colliderPosition.y -= 8;
         }
 
         if (board->softDrop) {
@@ -181,6 +214,7 @@ void Tetromino::hardDrop() {
     for (auto [collider, pos] : colliders) {
         collider->box->y += distance;
     }
+    colliderPosition.y += distance;
     instaLock = true;
 }
 
@@ -215,7 +249,6 @@ void Tetromino::findGhostPosition() {
 
     ghostPosition.y += 8 * numBlocksMoved;
     ghostPosition.x = position.x;
-    // TODO - Add rotation somehow once that works with main piece
 }
 
 // TODO - is there a prettier way?
@@ -231,6 +264,7 @@ void Tetromino::constructTetromino(TetrominoType type,
                 textures.insert( {new Texture(renderer, filepath + "_single.png", 0, 0), { i, 0 } });
                 ghostTextures.insert( {new Texture(renderer, filepath + "_ghost.png", 0, 0), { i, 0 } });
             }
+            center = { 1.5, 0.5 };
             break;
         case O:
             filepath = "resources/textures/O";
@@ -243,6 +277,8 @@ void Tetromino::constructTetromino(TetrominoType type,
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, 0 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0, 1 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, 1 } });
+            
+            center = { 0.5, 0.5 };
             break;
         case T:
             filepath = "resources/textures/T";
@@ -255,6 +291,8 @@ void Tetromino::constructTetromino(TetrominoType type,
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  0 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2,  0 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, -1 } });
+
+            center = { 1.0, 0.0 };
             break;
         case S:
             filepath = "resources/textures/S";
@@ -267,6 +305,8 @@ void Tetromino::constructTetromino(TetrominoType type,
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  0 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, -1 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2, -1 } });
+
+            center = { 1.0, 0.0 };
             break;
         case Z:
             filepath = "resources/textures/Z";
@@ -279,6 +319,8 @@ void Tetromino::constructTetromino(TetrominoType type,
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  0 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  1 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2,  1 } });
+
+            center = { 1.0, 1.0 };
             break;
         case J:
             filepath = "resources/textures/J";
@@ -291,6 +333,8 @@ void Tetromino::constructTetromino(TetrominoType type,
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0,  1 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  1 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2,  1 } });
+
+            center = { 1.0, 1.0 };
             break;
         case L:
             filepath = "resources/textures/L";
@@ -303,6 +347,8 @@ void Tetromino::constructTetromino(TetrominoType type,
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1,  0 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2,  0 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 2, -1 } });
+
+            center = { 1.0, 0.0 };
             break;
     }
 }
