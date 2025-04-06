@@ -48,8 +48,8 @@ void Tetromino::handleEvent(const SDL_Event& e) {
                 rotate();
                 break;
             case SDLK_SPACE:
-                // hard drop (snaps to bottom)
-
+                hardDrop();
+                position.y = ghostPosition.y;
                 break;
             default:
                 break;
@@ -96,6 +96,11 @@ bool Tetromino::checkCollisions() {
 }
 
 void Tetromino::checkLock(Vec2 initialPosition) {
+    if (instaLock) {
+        board->checkLineClear();
+        board->cycleTetrominos();
+        board->lockFrameCount = 0;
+    }
     if (position.y == initialPosition.y) {
         if (board->lockFrameCount == board->lockFrames + 60) {
             board->checkLineClear();
@@ -169,6 +174,15 @@ void Tetromino::drop() {
         }
         softDropStart = false;
     }
+}
+
+void Tetromino::hardDrop() {
+    int distance = ghostPosition.y - position.y;
+    position.y = ghostPosition.y;
+    for (auto [collider, pos] : colliders) {
+        collider->box->y += distance;
+    }
+    instaLock = true;
 }
 
 // TODO - move this function into checkCollisions

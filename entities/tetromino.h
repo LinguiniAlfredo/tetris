@@ -51,10 +51,11 @@ public:
     bool inBounds();
     bool colliding = false;
     bool softDropStart = false;
+    bool instaLock = false;
 
 private:
     void constructTetromino(TetrominoType type, SDL_Renderer *renderer);
     void generateColliders(SDL_Renderer *renderer);
-    void loadGhostPiece(SDL_Renderer *renderer);
     void findGhostPosition();
+    void hardDrop();
 };

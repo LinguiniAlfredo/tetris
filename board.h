@@ -23,7 +23,6 @@ public:
     double initialGravity;
     double gravity = 0.016666667;    // 1 cell per 60 frames
     double softDropGravity = 0.5;
-    double hardDropGravity = 100.0;
 
     int width = 10 * 8;
     int height = 20 * 8;
