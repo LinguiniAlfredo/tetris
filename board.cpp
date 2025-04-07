@@ -87,7 +87,6 @@ void Board::addTetromino(TetrominoType type, bool bagPiece) {
 }
 
 void Board::checkLineClear() {
-    int maxY = 0;
     int numBlocks;
     int linesCleared = 0;
 
@@ -99,13 +98,12 @@ void Board::checkLineClear() {
             }
         }
         if (numBlocks == width / 8) {
-            maxY = y;
             clearLine(y);
             linesCleared++;
+        } else if (linesCleared > 0) {
+            movePiecesDown(y, linesCleared);
+            linesCleared = 0;
         }
-    }
-    if (linesCleared > 0) {
-        movePiecesDown(maxY, linesCleared);
     }
 }
 
@@ -143,7 +141,7 @@ void Board::clearLine(int y) {
 void Board::movePiecesDown(int y, int linesCleared) {
     for (Tetromino *piece : tetrominos) {
         for (auto [block, pos] : piece->textures) {
-            if (pos.y < y) {
+            if (pos.y <= y) {
                 // TODO - refactor drop() to be able to use this here instead
                 for(auto const& [collider, colPos] : piece->colliders) {
                     collider->box->y += 8 * linesCleared;
