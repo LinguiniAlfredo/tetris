@@ -157,6 +157,10 @@ void Tetromino::rotate(int angle) {
         collider->box->x = colliderPosition.x + pos.x;
         collider->box->y = colliderPosition.y + pos.y;
     }
+
+    if (!inBounds() || checkCollisions()) {
+        rotate(-angle);
+    }
 }
 
 void Tetromino::moveX() {

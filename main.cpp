@@ -16,9 +16,11 @@
 
 using namespace std;
 
-// TODO - stash piece
+// TODO - wall / floor bounce
+//      - stash piece
 //      - main menu
 //      - scoring
+//      - lock effect
 //      - lineclear/tetris effect
 //      - hard drop effect
 //      - music/sound
