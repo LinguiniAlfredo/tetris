@@ -205,7 +205,7 @@ void gameLoop() {
         render();
 
         fps = countedFrames / (totalTimer.getTicks() / 1000.f);
-        currentBoard->hud->update(fps);
+        currentBoard->hud->update(currentBoard->score, fps);
 
         countedFrames++;
         int ticks = capTimer.getTicks();

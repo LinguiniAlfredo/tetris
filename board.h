@@ -32,6 +32,8 @@ public:
 
     Vec2 spawnPosition = { 3, 3 };
     Vec2 bagPosition = { 11, 1 };
+
+    double score = 0;
  
     void handleEvent(const SDL_Event& e);
     void update();

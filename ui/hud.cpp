@@ -8,10 +8,16 @@ HUD::HUD() {
 
 HUD::HUD(SDL_Renderer *renderer) {
 	this->font = TTF_OpenFont("resources/fonts/bebas.ttf", 28);
-	this->fps_texture = new Texture(renderer, "FPS: 0", font, color, 15,5);
+	this->score_texture = new Texture(renderer, "Score: 0", font, color, 15, 5);
+	this->fps_texture = new Texture(renderer, "FPS: 0", font, color, 15, 5);
 }
 
 HUD::~HUD() {
+	if (score_texture != nullptr) {
+		delete score_texture;
+		score_texture = nullptr;
+	}
+
 	if (fps_texture != nullptr) {
 		delete fps_texture;
 		fps_texture = nullptr;
@@ -23,16 +29,28 @@ HUD::~HUD() {
 	}
 }
 
-void HUD::update(float fps) {
+void HUD::update(double score, float fps) {
+	updateScore(score);
 	updateFPS(fps);
-    //updatePoints();
 }
 
 void HUD::draw() const {
+	if (score_texture != nullptr) {
+		score_texture->render(scorePosition.x, scorePosition.y);
+	}
 	if (fps_texture != nullptr) {
 		fps_texture->render(fpsPosition.x, fpsPosition.y);
 	}
 
+}
+
+void HUD::updateScore(double score) {
+	SDL_Renderer *tmp;
+	if (score_texture != nullptr) {
+		tmp = score_texture->renderer;
+		delete score_texture;
+	}
+	score_texture = new Texture(tmp, "Score: " + std::to_string((int)round(score)), font, color, 20, 10);
 }
 
 void HUD::updateFPS(float value) {
@@ -42,7 +60,4 @@ void HUD::updateFPS(float value) {
 		delete fps_texture;
 	}
 	fps_texture = new Texture(tmp, "FPS: " + std::to_string((int)round(value)), font, color, 20, 10);
-}
-
-void HUD::updatePoints(float value) {
 }

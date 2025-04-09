@@ -100,6 +100,7 @@ void Board::checkLineClear() {
         if (numBlocks == width / 8) {
             clearLine(y);
             linesCleared++;
+            score++;
         } else if (linesCleared > 0) {
             movePiecesDown(y, linesCleared);
             linesCleared = 0;

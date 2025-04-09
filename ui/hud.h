@@ -14,16 +14,18 @@ public:
 	~HUD();
 
 	TTF_Font *font = nullptr;
+	Texture *score_texture = nullptr;
 	Texture *fps_texture = nullptr;
 	SDL_Color color = { 0, 0, 0, 255 };
     
     // TODO - make window size globally included
     Vec2 fpsPosition = { 11, 19 };
+	Vec2 scorePosition = { 11, 17 };
 
-	void update(float fps);
+	void update(double score, float fps);
 	void draw() const;
 
 private:
+    void updateScore(double score);
 	void updateFPS(float value);
-    void updatePoints(float value);
 };
