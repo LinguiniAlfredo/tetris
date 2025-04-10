@@ -45,8 +45,11 @@ void Tetromino::handleEvent(const SDL_Event& e) {
             case SDLK_d:
                 velocity.x += 8;
                 break;
-            case SDLK_f:
+            case SDLK_e:
                 rotate(90);
+                break;
+            case SDLK_q:
+                rotate(-90);
                 break;
             case SDLK_SPACE:
                 hardDrop();
