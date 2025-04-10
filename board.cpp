@@ -104,7 +104,9 @@ void Board::checkLineClear() {
         } else if (linesCleared > 0) {
             movePiecesDown(y, linesCleared);
             linesCleared = 0;
+            y = height / 8 - 1;
         }
+
     }
 }
 
