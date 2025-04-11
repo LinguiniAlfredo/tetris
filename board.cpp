@@ -50,6 +50,10 @@ void Board::drawGrid() {
     delete gridBorder;
 }
 
+void Board::drawHud() {
+    this->hud->draw();
+}
+
 void Board::prepTetrominos() {
     addRandomTetromino(false);
     addRandomTetromino(true);

@@ -39,6 +39,7 @@ public:
     void update();
     void drawGrid();
     void drawTetrominos();
+    void drawHud();
     void cycleTetrominos();
     void prepTetrominos();
     void addRandomTetromino(bool bagPiece);

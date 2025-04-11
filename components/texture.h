@@ -19,6 +19,7 @@ public:
 	SDL_Renderer *renderer = nullptr;
 
 	void render(int x, int y);
+	void renderClipped(int x, int y, SDL_Rect *stencil);
 
 private:
 	SDL_Texture *loadFromFile(string path);

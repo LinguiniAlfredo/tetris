@@ -25,6 +25,11 @@ void Texture::render(int x, int y) {
 	SDL_RenderCopy(renderer, texture, NULL, &renderQuad);
 }
 
+void Texture::renderClipped(int x, int y, SDL_Rect *stencil) {
+    SDL_Rect renderQuad = {x, y, stencil->w, stencil->h};
+	SDL_RenderCopy(renderer, texture, stencil, &renderQuad);
+}
+
 SDL_Texture* Texture::loadFromFile(string path) {
 	free();
 

@@ -13,6 +13,7 @@
 #include "utils/timer.h"
 #include "entities/tetromino.h"
 #include "components/collision.h"
+#include "components/animation.h"
 
 using namespace std;
 
@@ -37,6 +38,7 @@ bool debug = false;
 SDL_Renderer *renderer = nullptr;
 SDL_Window *window = nullptr;
 Board *currentBoard = nullptr;
+Animation *animTest = nullptr;
 
 
 bool init() {
@@ -163,6 +165,7 @@ bool handleEvents() {
 
 void update() {
     currentBoard->update();
+    animTest->update();
 }
 
 void render() {
@@ -171,8 +174,10 @@ void render() {
 
     currentBoard->drawGrid();
     currentBoard->drawTetrominos();
-    currentBoard->hud->draw();
-
+    currentBoard->drawHud();
+    
+    animTest->draw();
+    
     if (debug) {
         renderColliders();
     }
@@ -186,6 +191,8 @@ void gameLoop() {
     Timer capTimer;
 
     changeLevel(1);
+
+    animTest = new Animation(renderer, "resources/textures/anim_test.png");
 
     bool quit = false;
     uint32_t countedFrames = 0;
