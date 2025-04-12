@@ -30,12 +30,10 @@ Animation::~Animation() {
 }
 
 void Animation::update(int currentFrame) {
-    if (currentFrame % 2 == 0) {
-        stencil->x += texture->width / numFrames;
-        if (stencil->x >= texture->width) {
-            stencil->x = 0;
-            stop();
-        }
+    stencil->x += texture->width / numFrames;
+    if (stencil->x >= texture->width) {
+        stencil->x = 0;
+        stop();
     }
 }
 
