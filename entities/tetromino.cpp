@@ -67,7 +67,7 @@ void Tetromino::handleEvent(const SDL_Event& e) {
     }
 }
 
-void Tetromino::update() {
+void Tetromino::update(int currentFrame) {
     Vec2 initialPosition = position;
 
     findGhostPosition();
@@ -98,13 +98,13 @@ bool Tetromino::checkCollisions() {
     return colliding;
 }
 
+
 void Tetromino::checkLock(Vec2 initialPosition) {
     if (instaLock) {
         board->checkLineClear();
         board->cycleTetrominos();
         board->lockFrameCount = 0;
-    }
-    if (position.y == initialPosition.y) {
+    } else if (position.y == initialPosition.y) {
         if (board->lockFrameCount == board->lockFrames + 30) {
             board->checkLineClear();
             board->cycleTetrominos();
@@ -144,6 +144,7 @@ void Tetromino::rotate(int angle) {
         pos.x = round(radX * c - radY * s + center.x);
         pos.y = round(radX * s + radY * c + center.y);
     }
+    
     for (auto& [texture, pos] : ghostTextures) {
         double radX = pos.x - center.x;
         double radY = pos.y - center.y;
@@ -284,7 +285,7 @@ void Tetromino::constructTetromino(TetrominoType type,
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, 0 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 0, 1 } });
             ghostTextures.insert({ new Texture(renderer, filepath + "_ghost.png", 0, 0), { 1, 1 } });
-            
+
             center = { 0.5, 0.5 };
             break;
         case T:

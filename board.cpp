@@ -11,6 +11,7 @@ Board::Board(SDL_Renderer *renderer, double gravity) {
     this->initialGravity = gravity;
     this->gravity = gravity;
     prepTetrominos();
+    prepAnimations();
 }
 
 Board::~Board(){
@@ -18,14 +19,38 @@ Board::~Board(){
     for (Tetromino* tetromino : tetrominos) {
         delete tetromino;
     }
+    for (Animation* animation : animations) {
+        delete animation;
+    }
 }
 
 void Board::handleEvent(const SDL_Event& e) {
     activeTetromino->handleEvent(e);
 }
 
-void Board::update() {
-    activeTetromino->update();
+void Board::update(int currentFrame) {
+    for (Animation* animation : animations) {
+        if(animation->playing) {
+            animation->update(currentFrame);
+        }
+    }
+
+    activeTetromino->update(currentFrame);
+}
+
+void Board::draw() {
+    drawTetrominos();
+    drawAnimations();
+    drawGrid();
+    drawHud();
+}
+
+void Board::drawAnimations() {
+    for (Animation* animation : animations) {
+        if(animation->playing) {
+            animation->draw();
+        }
+    }
 }
 
 void Board::drawTetrominos() {
@@ -142,6 +167,7 @@ void Board::clearLine(int y) {
             tetrominoTrash.push_back(piece);
         }
     }
+    animations.at(y)->play();
     removeTrash();
 }
 
@@ -190,4 +216,10 @@ void Board::removeTrash() {
         delete trashPiece;
     }
     tetrominoTrash.clear();
+}
+
+void Board::prepAnimations() {
+    for (int i = 0; i < height / 8; i++) {
+        animations.push_back(new Animation(renderer, "resources/textures/anim_clear.png", 5, {0, i}));
+    }
 }

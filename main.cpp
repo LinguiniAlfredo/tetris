@@ -38,8 +38,6 @@ bool debug = false;
 SDL_Renderer *renderer = nullptr;
 SDL_Window *window = nullptr;
 Board *currentBoard = nullptr;
-Animation *animTest = nullptr;
-
 
 bool init() {
 	bool success = true;
@@ -163,20 +161,15 @@ bool handleEvents() {
 }
 
 
-void update() {
-    currentBoard->update();
-    animTest->update();
+void update(int currentFrame) {
+    currentBoard->update(currentFrame);
 }
 
 void render() {
     SDL_SetRenderDrawColor(renderer, 0xF5, 0xF5, 0xF5, 0xFF);
     SDL_RenderClear(renderer);
 
-    currentBoard->drawGrid();
-    currentBoard->drawTetrominos();
-    currentBoard->drawHud();
-    
-    animTest->draw();
+    currentBoard->draw();
     
     if (debug) {
         renderColliders();
@@ -192,8 +185,6 @@ void gameLoop() {
 
     changeLevel(1);
 
-    animTest = new Animation(renderer, "resources/textures/anim_test.png");
-
     bool quit = false;
     uint32_t countedFrames = 0;
     float fps = 0.f;
@@ -208,7 +199,7 @@ void gameLoop() {
 
         quit = handleEvents();
 
-        update();
+        update(countedFrames);
         render();
 
         fps = countedFrames / (totalTimer.getTicks() / 1000.f);

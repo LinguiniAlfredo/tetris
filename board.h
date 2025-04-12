@@ -4,6 +4,7 @@
 #include "ui/hud.h"
 #include "entities/tetromino.h"
 #include <vector>
+#include "components/animation.h"
 
 class Board {
 public:
@@ -17,6 +18,8 @@ public:
 
     Tetromino *activeTetromino = nullptr;
     Tetromino *nextTetromino = nullptr;
+
+    vector<Animation*> animations;
 
     bool softDrop = false;
     bool hardDrop = false;
@@ -36,12 +39,15 @@ public:
     double score = 0;
  
     void handleEvent(const SDL_Event& e);
-    void update();
+    void update(int currentFrame);
+    void draw();
+    void drawAnimations();
     void drawGrid();
     void drawTetrominos();
     void drawHud();
     void cycleTetrominos();
     void prepTetrominos();
+    void prepAnimations();
     void addRandomTetromino(bool bagPiece);
     void addTetromino(TetrominoType type, bool bagPiece);
     void checkLineClear();

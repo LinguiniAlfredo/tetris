@@ -1,6 +1,7 @@
 #pragma once
 #include "../utils/vec2.h"
 #include "../components/texture.h"
+#include "../components/animation.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -43,7 +44,7 @@ public:
 
     bool checkCollisions();
     void handleEvent(const SDL_Event& e);
-    void update();
+    void update(int currentFrame);
     void draw() const;
     void rotate(int angle);
     void drop();
