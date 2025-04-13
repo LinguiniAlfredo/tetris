@@ -1,6 +1,6 @@
 # Tetris
 
-## Installation
+## Installation (Linux)
 You'll need SDL2 libraries to compile:
 ```bash
 sudo apt install libsdl2-dev
