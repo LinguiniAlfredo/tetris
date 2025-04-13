@@ -196,12 +196,12 @@ void Board::movePiecesDown() {
             if (containsBlock(x, y)) {
                 if (emptyLines > 0) {
                     moveRowDown(y, emptyLines);
-                    emptyLines = 0;
                 }
                 break;
+            } else if (x == width / 8 - 1) {
+                emptyLines++;
             }
         }
-        emptyLines++;
     }
 }
 
