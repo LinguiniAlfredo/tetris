@@ -40,12 +40,21 @@ void Board::update(int currentFrame) {
     if (activeTetromino->locked) {
         lockFrameCount = 0;
         checkLineClear();
-        cycleTetrominos();
+        cycleTetrominos(); // TODO - do this after collapsing
     }
 
     if (linesCleared > 0 && !animationsPlaying()) {
         removeClearedPieces();
-        //movePiecesDown();
+        linesCleared = 0;
+        collapseStart = true;
+    }
+    if (collapseStart) {
+        if (collapseFrameCount == collapseFrames) {
+            movePiecesDown();
+            collapseFrameCount = 0;
+            collapseStart = false;
+        }
+        collapseFrameCount++;
     }
 }
 
@@ -99,7 +108,6 @@ void Board::addRandomTetromino(bool bagPiece) {
     // TODO - add regulation "bag" system
     int randomType = rand() % 7 + 0;
     addTetromino((TetrominoType)randomType, bagPiece);
-    // addTetromino(L, bagPiece);
 }
 
 void Board::cycleTetrominos() {
@@ -160,16 +168,22 @@ void Board::clearLine(int y) {
     for (Tetromino *piece : tetrominos) {
         for (auto [block, blockPos] : piece->textures) {
             if (piece->position.y / 8 + blockPos.y / 8 == y) {
-                piece->textureTrash.push_back(block);
+                if(!(find(piece->textureTrash.begin(), piece->textureTrash.end(), block) != piece->textureTrash.end())){
+                    piece->textureTrash.push_back(block);
+                }
             }
         }
         for (auto [collider, pos] : piece->colliders) {
             if (piece->position.y / 8 + pos.y / 8 == y) {
-                piece->colliderTrash.push_back(collider);
+                if(!(find(piece->colliderTrash.begin(), piece->colliderTrash.end(), collider) != piece->colliderTrash.end())){
+                    piece->colliderTrash.push_back(collider);
+                }
             }
         }
         if (piece->textures.size() == 0) {
-            tetrominoTrash.push_back(piece);
+            if(!(find(tetrominoTrash.begin(), tetrominoTrash.end(), piece) != tetrominoTrash.end())){
+                tetrominoTrash.push_back(piece);
+            }
         }
     }
     animations.at(y)->play();
@@ -182,14 +196,13 @@ void Board::movePiecesDown() {
             if (containsBlock(x, y)) {
                 if (emptyLines > 0) {
                     moveRowDown(y, emptyLines);
-                    emptyLines = 1;
+                    emptyLines = 0;
                 }
                 break;
             }
         }
         emptyLines++;
     }
-    linesCleared = 0;
 }
 
 void Board::moveRowDown(int row, int numLines) {
@@ -201,16 +214,7 @@ void Board::moveRowDown(int row, int numLines) {
                         collider->box->y += 8 * numLines;
                     }
                     piece->colliderPosition.y += 8 * numLines;
-
-                    if (piece->inBounds() && !piece->checkCollisions()) {
-                        piece->position.y += 8 * numLines;
-
-                    } else {
-                        for (auto const& [collider, pos] : piece->colliders) {
-                            collider->box->y -= 8 * numLines;
-                        }
-                        piece->colliderPosition.y -= 8 * numLines;
-                    }
+                    piece->position.y += 8 * numLines;
                 }
             }
         }

@@ -26,8 +26,8 @@ Tetromino::~Tetromino() {
     for (auto [collider, pos] : colliders) {
         delete collider;
     }
-    for (auto [texture, pos] : ghostTextures) {
-        delete texture;
+    for (auto [ghostTexture, pos] : ghostTextures) {
+        delete ghostTexture;
     }
 }
 

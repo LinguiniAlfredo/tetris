@@ -33,6 +33,9 @@ public:
     int lockFrames = 30;
     int lockFrameCount = 0;
     int linesCleared = 0;
+    bool collapseStart = false;
+    int collapseFrames = 6;
+    int collapseFrameCount = 0;
 
     Vec2 spawnPosition = { 3, 3 };
     Vec2 bagPosition = { 11, 1 };
