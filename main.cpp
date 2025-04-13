@@ -22,7 +22,6 @@ using namespace std;
 //      - main menu
 //      - scoring
 //      - lock effect
-//      - lineclear/tetris effect
 //      - hard drop effect
 //      - music/sound
 

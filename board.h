@@ -32,6 +32,7 @@ public:
 
     int lockFrames = 30;
     int lockFrameCount = 0;
+    int linesCleared = 0;
 
     Vec2 spawnPosition = { 3, 3 };
     Vec2 bagPosition = { 11, 1 };
@@ -53,7 +54,10 @@ public:
     void checkLineClear();
     bool containsBlock(int x, int y);
     void clearLine(int y);
-    void movePiecesDown(int y, int linesCleared);
+    void movePiecesDown();
+    void moveRowDown(int row, int numLines);
+    void removeClearedPieces();
 
-    void removeTrash();
+    bool animationsPlaying();
+
 };

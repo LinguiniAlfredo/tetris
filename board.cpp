@@ -36,6 +36,17 @@ void Board::update(int currentFrame) {
     }
 
     activeTetromino->update(currentFrame);
+
+    if (activeTetromino->locked) {
+        lockFrameCount = 0;
+        checkLineClear();
+        cycleTetrominos();
+    }
+
+    if (linesCleared > 0 && !animationsPlaying()) {
+        removeClearedPieces();
+        //movePiecesDown();
+    }
 }
 
 void Board::draw() {
@@ -117,7 +128,6 @@ void Board::addTetromino(TetrominoType type, bool bagPiece) {
 
 void Board::checkLineClear() {
     int numBlocks;
-    int linesCleared = 0;
 
     for (int y = (height / 8) - 1; y >= 0; y--) {
         numBlocks = 0;
@@ -130,12 +140,7 @@ void Board::checkLineClear() {
             clearLine(y);
             linesCleared++;
             score++;
-        } else if (linesCleared > 0) {
-            movePiecesDown(y, linesCleared);
-            linesCleared = 0;
-            y = height / 8 - 1;
         }
-
     }
 }
 
@@ -168,34 +173,51 @@ void Board::clearLine(int y) {
         }
     }
     animations.at(y)->play();
-    removeTrash();
 }
 
-void Board::movePiecesDown(int y, int linesCleared) {
-    for (Tetromino *piece : tetrominos) {
-        for (auto [block, pos] : piece->textures) {
-            if (pos.y <= y) {
-                // TODO - refactor drop() to be able to use this here instead
-                for(auto const& [collider, colPos] : piece->colliders) {
-                    collider->box->y += 8 * linesCleared;
+void Board::movePiecesDown() {
+    int emptyLines = 0;
+    for (int y = (height / 8) - 1; y >= 0; y--) {
+        for (int x = 0; x < width / 8; x++) {
+            if (containsBlock(x, y)) {
+                if (emptyLines > 0) {
+                    moveRowDown(y, emptyLines);
+                    emptyLines = 1;
                 }
-                piece->colliderPosition.y += 8 * linesCleared;
+                break;
+            }
+        }
+        emptyLines++;
+    }
+    linesCleared = 0;
+}
 
-                if (piece->inBounds() && !piece->checkCollisions()) {
-                    piece->position.y += 8 * linesCleared;
-
-                } else {
-                    for (auto const& [collider, pos] : piece->colliders) {
-                        collider->box->y -= 8 * linesCleared;
+void Board::moveRowDown(int row, int numLines) {
+    for (Tetromino *piece : tetrominos) {
+        if (piece != activeTetromino) {
+            for (auto [block, blockPos] : piece->textures) {
+                if (piece->position.y / 8 + blockPos.y / 8 == row) {
+                    for(auto const& [collider, colPos] : piece->colliders) {
+                        collider->box->y += 8 * numLines;
                     }
-                    piece->colliderPosition.y -= 8 * linesCleared;
+                    piece->colliderPosition.y += 8 * numLines;
+
+                    if (piece->inBounds() && !piece->checkCollisions()) {
+                        piece->position.y += 8 * numLines;
+
+                    } else {
+                        for (auto const& [collider, pos] : piece->colliders) {
+                            collider->box->y -= 8 * numLines;
+                        }
+                        piece->colliderPosition.y -= 8 * numLines;
+                    }
                 }
             }
         }
     }
 }
 
-void Board::removeTrash() {
+void Board::removeClearedPieces() {
     for (Tetromino *piece : tetrominos) {
         for (Texture *block : piece->textureTrash) {
             piece->textures.erase(block);
@@ -222,4 +244,13 @@ void Board::prepAnimations() {
     for (int i = 0; i < height / 8; i++) {
         animations.push_back(new Animation(renderer, "resources/textures/anim_clear.png", 5, {0, i}));
     }
+}
+
+bool Board::animationsPlaying() {
+    for (Animation* animation : animations) {
+        if (animation->playing) {
+            return true;
+        }
+    }
+    return false;
 }

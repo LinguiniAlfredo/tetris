@@ -98,17 +98,12 @@ bool Tetromino::checkCollisions() {
     return colliding;
 }
 
-
 void Tetromino::checkLock(Vec2 initialPosition) {
     if (instaLock) {
-        board->checkLineClear();
-        board->cycleTetrominos();
-        board->lockFrameCount = 0;
+        locked = true;
     } else if (position.y == initialPosition.y) {
         if (board->lockFrameCount == board->lockFrames + 30) {
-            board->checkLineClear();
-            board->cycleTetrominos();
-            board->lockFrameCount = 0;
+            locked = true;
         } else {
             board->lockFrameCount++;
         }

@@ -55,6 +55,7 @@ public:
     bool colliding = false;
     bool softDropStart = false;
     bool instaLock = false;
+    bool locked = false;
 
 private:
     void constructTetromino(TetrominoType type, SDL_Renderer *renderer);
