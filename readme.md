@@ -8,7 +8,7 @@ sudo apt install libsdl2-image-dev
 sudo apt install libsdl2-ttf-dev
 ```
 
-Then simply run:
+Then just run:
 ```bash
 make clean # cleans root directory of build files
 make       # builds tetris executable
