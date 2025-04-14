@@ -205,7 +205,7 @@ void Board::movePiecesDown() {
 
 void Board::moveRowDown(int row, int numLines) {
     for (Tetromino *piece : tetrominos) {
-        if (piece != activeTetromino) {
+        if (piece != activeTetromino && piece != nextTetromino) {
             for (auto [block, blockPos] : piece->textures) {
                 if (piece->position.y / 8 + blockPos.y / 8 == row) {
                     for(auto const& [collider, colPos] : piece->colliders) {
