@@ -3,7 +3,7 @@ OBJS = main.cpp ./build/timer.o ./build/texture.o ./build/hud.o ./build/tetromin
 CC = g++
 OPTIONS = -Wall -g
 LINKER_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf 
-EXE = main
+EXE = tetris
 
 all : $(OBJS)
 	$(CC) $(OPTIONS) $(OBJS) $(LINKER_FLAGS) -o $(EXE)
@@ -34,7 +34,7 @@ build/board.o : board.cpp
 
 clean :
 	rm -r ./build/
-	rm ./main
+	rm ./tetris
 
 debug :
 	valgrind --leak-check=full \
@@ -42,6 +42,6 @@ debug :
 		--track-origins=yes \
 		--verbose \
 		--log-file=debug.txt \
-		./main
+		./tetris
 
 $(shell mkdir -p ./build)

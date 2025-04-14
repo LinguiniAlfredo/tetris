@@ -35,11 +35,13 @@ void HUD::update(double score, float fps) {
 }
 
 void HUD::draw() const {
+    if (gameState.debug) {
+        if (fps_texture != nullptr) {
+            fps_texture->render(fpsPosition.x, fpsPosition.y);
+        }
+    }
 	if (score_texture != nullptr) {
 		score_texture->render(scorePosition.x, scorePosition.y);
-	}
-	if (fps_texture != nullptr) {
-		fps_texture->render(fpsPosition.x, fpsPosition.y);
 	}
 
 }
