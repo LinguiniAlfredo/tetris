@@ -8,6 +8,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
+#include "gamestate.h"
 #include "board.h"
 #include "ui/hud.h"
 #include "utils/timer.h"
@@ -25,6 +26,8 @@ using namespace std;
 //      - hard drop effect
 //      - music/sound
 
+GameState gameState;
+
 const float TICKS_PER_FRAME = 1000.f / 60;
 
 const int BOARD_WIDTH_PX = 15 * 8;
@@ -32,7 +35,6 @@ const int BOARD_HEIGHT_PX = 20 * 8;
 const int SCREEN_WIDTH = BOARD_WIDTH_PX * 4;
 const int SCREEN_HEIGHT = BOARD_HEIGHT_PX * 4;
 
-bool debug = false;
 
 SDL_Renderer *renderer = nullptr;
 SDL_Window *window = nullptr;
@@ -99,7 +101,7 @@ void changeLevel(int level) {
 }
 
 void toggleDebug() {
-    debug = !debug;
+    gameState.debug = !gameState.debug;
 }
 
 void renderColliders() {
@@ -170,7 +172,7 @@ void render() {
 
     currentBoard->draw();
     
-    if (debug) {
+    if (gameState.debug) {
         renderColliders();
     }
 

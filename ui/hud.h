@@ -5,6 +5,8 @@
 #include "../components/texture.h"
 #include "../utils/vec2.h"
 
+#include "../gamestate.h"
+extern GameState gameState;
 
 class HUD
 {
@@ -29,3 +31,4 @@ private:
     void updateScore(double score);
 	void updateFPS(float value);
 };
+
