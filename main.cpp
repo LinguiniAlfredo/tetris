@@ -30,7 +30,7 @@ GameState gameState;
 
 const float TICKS_PER_FRAME = 1000.f / 60;
 
-const int BOARD_WIDTH_PX = 15 * 8;
+const int BOARD_WIDTH_PX = 16 * 8;
 const int BOARD_HEIGHT_PX = 20 * 8;
 const int SCREEN_WIDTH = BOARD_WIDTH_PX * 4;
 const int SCREEN_HEIGHT = BOARD_HEIGHT_PX * 4;

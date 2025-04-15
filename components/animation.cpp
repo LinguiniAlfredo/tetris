@@ -30,7 +30,7 @@ Animation::~Animation() {
 }
 
 void Animation::update(int currentFrame) {
-    if (currentFrame % 2 == 0) {
+    if (currentFrame % 3 == 0) {
         stencil->x += texture->width / numFrames;
         if (stencil->x >= texture->width) {
             stencil->x = 0;

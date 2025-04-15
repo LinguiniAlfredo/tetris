@@ -8,6 +8,7 @@ using namespace std;
 Board::Board(SDL_Renderer *renderer, double gravity) {
     this->renderer = renderer;
     this->hud = new HUD(renderer);
+    this->sidebar = new Texture(renderer, "resources/textures/sidebar.png", 0, 0);
     this->initialGravity = gravity;
     this->gravity = gravity;
     prepTetrominos();
@@ -16,6 +17,8 @@ Board::Board(SDL_Renderer *renderer, double gravity) {
 
 Board::~Board(){
     delete hud;
+    delete sidebar;
+
     for (Tetromino* tetromino : tetrominos) {
         delete tetromino;
     }
@@ -59,10 +62,15 @@ void Board::update(int currentFrame) {
 }
 
 void Board::draw() {
+    drawSidebar();
     drawTetrominos();
-    drawAnimations();
     drawGrid();
+    drawAnimations();
     drawHud();
+}
+
+void Board::drawSidebar() {
+    sidebar->render(sidebarPosition.x, sidebarPosition.y);
 }
 
 void Board::drawAnimations() {
@@ -85,12 +93,12 @@ void Board::drawGrid() {
     for (int x = 0; x < width; x = x+8) {
         SDL_RenderDrawLine(renderer, x, 0, x, height);
         for (int y = 0; y < height; y = y+8) {
-            SDL_RenderDrawLine(renderer, 0, y, width, y);
+            SDL_RenderDrawLine(renderer, 0, y, width - 1, y);
         }
     }
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderDrawLine(renderer, width, 0, width, height);
+    //SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    //SDL_RenderDrawLine(renderer, width, 0, width, height);
 }
 
 void Board::drawHud() {
@@ -122,14 +130,35 @@ void Board::cycleTetrominos() {
 void Board::addTetromino(TetrominoType type, bool bagPiece) {
     Vec2 position = bagPiece ? bagPosition : spawnPosition;
     Tetromino *tetromino = new Tetromino(renderer, this, type, position);
-    
+
     if (bagPiece) {
+        adjustBagPosition(tetromino, type); // jank but whatevs
         this->nextTetromino = tetromino;
     } else {
         this->activeTetromino = tetromino;
     }
 
     tetrominos.push_back(tetromino);
+}
+
+void Board::adjustBagPosition(Tetromino *tetromino, TetrominoType type) {
+    switch (type) {
+        case O:
+            tetromino->position.x += 16;
+            tetromino->position.y -= 8;
+            break;
+        case T: 
+        case S:
+        case L: 
+        case I:
+            tetromino->position.x += 8;
+            break;
+        case J:
+        case Z:
+            tetromino->position.x += 8;
+            tetromino->position.y -= 8;
+            break;
+    }
 }
 
 void Board::checkLineClear() {
@@ -244,7 +273,7 @@ void Board::removeClearedPieces() {
 
 void Board::prepAnimations() {
     for (int i = 0; i < height / 8; i++) {
-        animations.push_back(new Animation(renderer, "resources/textures/anim_clear.png", 5, {0, i}));
+        animations.push_back(new Animation(renderer, "resources/textures/anim_clear_h.png", 7, {0, i}));
     }
 }
 
@@ -256,3 +285,4 @@ bool Board::animationsPlaying() {
     }
     return false;
 }
+

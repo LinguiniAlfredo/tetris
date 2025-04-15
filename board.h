@@ -21,6 +21,8 @@ public:
 
     vector<Animation*> animations;
 
+    Texture *sidebar = nullptr;
+
     bool softDrop = false;
     bool hardDrop = false;
     double initialGravity;
@@ -37,14 +39,16 @@ public:
     int collapseFrames = 6;
     int collapseFrameCount = 0;
 
+    Vec2 sidebarPosition = { 10, 0 };
     Vec2 spawnPosition = { 3, 3 };
-    Vec2 bagPosition = { 11, 1 };
+    Vec2 bagPosition = { 10, 2 };
 
     double score = 0;
  
     void handleEvent(const SDL_Event& e);
     void update(int currentFrame);
     void draw();
+    void drawSidebar();
     void drawAnimations();
     void drawGrid();
     void drawTetrominos();
@@ -60,6 +64,7 @@ public:
     void movePiecesDown();
     void moveRowDown(int row, int numLines);
     void removeClearedPieces();
+    void adjustBagPosition(Tetromino *tetromino, TetrominoType type);
 
     bool animationsPlaying();
 

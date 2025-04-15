@@ -43,7 +43,6 @@ void HUD::draw() const {
 	if (score_texture != nullptr) {
 		score_texture->render(scorePosition.x, scorePosition.y);
 	}
-
 }
 
 void HUD::updateScore(double score) {
