@@ -66,7 +66,7 @@ void Board::draw() {
     drawTetrominos();
     drawGrid();
     drawAnimations();
-    drawHud();
+    //drawHud();
 }
 
 void Board::drawSidebar() {
