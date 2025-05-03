@@ -6,6 +6,8 @@
 #include <vector>
 #include "components/animation.h"
 
+extern GameState gameState;
+
 class Board {
 public:
     Board(SDL_Renderer *renderer, double gravity);
@@ -40,7 +42,7 @@ public:
     int collapseFrameCount = 0;
 
     Vec2 sidebarPosition = { 10, 0 };
-    Vec2 spawnPosition = { 3, 3 };
+    Vec2 spawnPosition = { 3, 1 };
     Vec2 bagPosition = { 10, 2 };
 
     double score = 0;
@@ -65,6 +67,7 @@ public:
     void moveRowDown(int row, int numLines);
     void removeClearedPieces();
     void adjustBagPosition(Tetromino *tetromino, TetrominoType type);
+    bool checkForGameOver();
 
     bool animationsPlaying();
 

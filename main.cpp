@@ -39,6 +39,7 @@ const int SCREEN_HEIGHT = BOARD_HEIGHT_PX * 4;
 SDL_Renderer *renderer = nullptr;
 SDL_Window *window = nullptr;
 Board *currentBoard = nullptr;
+Texture *gameOverTexture = nullptr;
 
 bool init() {
 	bool success = true;
@@ -88,12 +89,8 @@ void changeLevel(int level) {
             currentBoard = new Board(renderer, 0.016666667);
             break;
         case 2:
-            delete currentBoard;
-            currentBoard = new Board(renderer, 0.05); // stops halfway down?
             break;
         case 3:
-            delete currentBoard;
-            currentBoard = new Board(renderer, 1);
             break;
         default:
             break;
@@ -123,8 +120,14 @@ void renderColliders() {
             SDL_RenderDrawRect(renderer, correctedBox);
             delete correctedBox;
        }
-
    }
+}
+
+void renderGameOverScreen() {
+    if (gameOverTexture == nullptr) {
+        gameOverTexture = new Texture(renderer, "resources/textures/gameover.png", 0, 0);
+    }
+    gameOverTexture->render(0, 0);
 }
 
 bool handleEvents() {
@@ -143,12 +146,6 @@ bool handleEvents() {
                 case SDLK_1:
                     changeLevel(1);
                     break;
-                case SDLK_2:
-                    changeLevel(2);
-                    break;
-                case SDLK_3:
-                    changeLevel(3);
-                    break;
                 case SDLK_F1:
                     toggleDebug();
                     break;
@@ -156,7 +153,15 @@ bool handleEvents() {
                     break;
             }
         }
+
         currentBoard->handleEvent(e);
+
+        if (gameState.gameover) {
+            if (e.type == SDL_KEYDOWN) {
+                gameState.gameover = false;
+                changeLevel(1);
+            }
+        }
     }
     return quit;
 }
@@ -174,6 +179,9 @@ void render() {
     
     if (gameState.debug) {
         renderColliders();
+    }
+    if (gameState.gameover) {
+        renderGameOverScreen();
     }
 
     SDL_RenderPresent(renderer);
@@ -200,7 +208,9 @@ void gameLoop() {
 
         quit = handleEvents();
 
-        update(countedFrames);
+        if (!gameState.gameover) {
+            update(countedFrames);
+        }
         render();
 
         fps = countedFrames / (totalTimer.getTicks() / 1000.f);
@@ -216,6 +226,9 @@ void gameLoop() {
 }
 
 void close() {		
+    delete gameOverTexture;
+    gameOverTexture = nullptr;
+
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	renderer = nullptr;

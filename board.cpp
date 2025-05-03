@@ -66,7 +66,7 @@ void Board::draw() {
     drawTetrominos();
     drawGrid();
     drawAnimations();
-    //drawHud();
+    drawHud();
 }
 
 void Board::drawSidebar() {
@@ -124,6 +124,8 @@ void Board::cycleTetrominos() {
         collider->box->y = spawnPosition.y + relPos.y;
     }
     activeTetromino = nextTetromino;
+    checkForGameOver();
+
     addRandomTetromino(true);
 }
 
@@ -284,5 +286,15 @@ bool Board::animationsPlaying() {
         }
     }
     return false;
+}
+
+bool Board::checkForGameOver() {
+    for(Tetromino* tetromino : tetrominos) {
+        if(tetromino != activeTetromino) {
+            if (tetromino->position == activeTetromino->position) {
+                gameState.gameover = true;
+            }
+        }
+    }
 }
 
